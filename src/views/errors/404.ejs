@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#12356a">
+    <title>Page Not Found | EduVoice</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/script.js" defer></script>
+</head>
+<body class="error-page">
+    <div class="error-card" role="alert">
+        <div class="error-illustration" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 5h14v14H5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M5 9h14M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="9" cy="15" r="1.2" fill="currentColor"/>
+                <circle cx="12" cy="15" r="1.2" fill="currentColor"/>
+                <circle cx="15" cy="15" r="1.2" fill="currentColor"/>
+            </svg>
+        </div>
+        <p class="error-code">Error 404</p>
+        <h1>Page Not Found</h1>
+        <p class="error-message"><%= typeof message !== 'undefined' && message ? message : 'The page you are looking for does not exist or has been moved.' %></p>
+        <div class="error-actions">
+            <% var backUrl = '/';
+               if (typeof user !== 'undefined' && user && user.role) {
+                   if (user.role === 'admin') backUrl = '/admin/dashboard';
+                   else if (user.role === 'staff') backUrl = '/staff/dashboard';
+                   else if (user.role === 'student') backUrl = '/student/dashboard';
+               } %>
+            <a class="error-btn error-btn-primary" href="<%= backUrl %>"><span aria-hidden="true">&larr;</span> Back to Dashboard</a>
+            <a class="error-btn error-btn-secondary" href="/">Go Home</a>
+        </div>
+    </div>
+</body>
+</html>

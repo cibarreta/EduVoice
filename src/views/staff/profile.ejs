@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Staff Profile | EduVoice" }) %>
+</head>
+<body>
+    <div class="app-shell">
+        <%- include("../partials/sidebar", { role: "staff" }) %>
+        <div class="app-main">
+            <div class="app-topbar">
+                <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="app-sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                        <path d="M4 7h16M4 12h16M4 17h16" stroke="#12356a" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1 class="page-title">My Profile</h1>
+                    <p class="page-subtitle">Manage your account information and password</p>
+                </div>
+                <div class="topbar-actions">
+                    <a class="btn btn-outline" href="/staff/dashboard">Dashboard</a>
+                </div>
+            </div>
+            <div class="app-content">
+                <%- include("../partials/alerts") %>
+
+                <div style="display:grid;grid-template-columns:320px 1fr;gap:1.5rem;">
+                    <div class="card" style="text-align:center;">
+                        <div style="width:96px;height:96px;margin:0 auto;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,#2364bd 0%,#12356a 100%);color:#ffffff;font-size:2rem;font-weight:750;box-shadow:0 8px 24px rgba(35,100,189,0.2);">
+                            <%= (staff.name || staff.email || 'S').charAt(0).toUpperCase() %>
+                        </div>
+                        <h2 style="margin-top:1rem;font-size:1.25rem;color:#12356a;letter-spacing:-0.02em;"><%= staff.name || 'Staff Member' %></h2>
+                        <p style="margin-top:4px;font-size:0.86rem;color:#65758a;"><%= staff.email %></p>
+                        <div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 12px;border-radius:20px;background:#eaf2ff;color:#2364bd;font-size:0.74rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:#2364bd;"></span>
+                            Staff
+                        </div>
+                        <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid #edf1f6;text-align:left;">
+                            <div style="display:flex;flex-direction:column;gap:12px;">
+                                <div>
+                                    <div style="font-size:0.72rem;color:#8090a4;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Full Name</div>
+                                    <div style="font-size:0.9rem;color:#172b4d;font-weight:600;margin-top:3px;"><%= staff.name || '—' %></div>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.72rem;color:#8090a4;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Email</div>
+                                    <div style="font-size:0.9rem;color:#172b4d;font-weight:600;margin-top:3px;"><%= staff.email %></div>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.72rem;color:#8090a4;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Role</div>
+                                    <div style="font-size:0.9rem;color:#172b4d;font-weight:600;margin-top:3px;text-transform:capitalize;"><%= staff.role || 'Staff' %></div>
+                                </div>
+                                <% if (staff.created_at) { %>
+                                    <div>
+                                        <div style="font-size:0.72rem;color:#8090a4;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;">Joined</div>
+                                        <div style="font-size:0.9rem;color:#172b4d;font-weight:600;margin-top:3px;"><%= new Date(staff.created_at).toLocaleDateString() %></div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid #edf1f6;">
+                            <form action="/logout" method="POST">
+                                <button type="submit" class="btn btn-danger" style="width:100%;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                        <div class="card">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <h3 style="font-size:1.1rem;color:#12356a;letter-spacing:-0.02em;">Edit Name</h3>
+                                    <p style="font-size:0.82rem;color:#65758a;margin-top:4px;">Update your display name shown across the system.</p>
+                                </div>
+                                <div style="width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#eaf2ff;color:#2364bd;flex:0 0 40px;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                                        <path d="M4 20h4L20 8l-4-4L4 16v4Zm11-11 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <form method="POST" action="/staff/profile" style="margin-top:1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="editName">Full Name</label>
+                                    <input id="editName" name="name" type="text" class="form-control" value="<%= staff.name || '' %>" placeholder="Enter your full name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="editEmail">Email</label>
+                                    <input id="editEmail" type="email" class="form-control" value="<%= staff.email %>" disabled>
+                                    <small class="form-text">Email address cannot be changed here. Contact an administrator.</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                        <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="card">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                                <div>
+                                    <h3 style="font-size:1.1rem;color:#12356a;letter-spacing:-0.02em;">Change Password</h3>
+                                    <p style="font-size:0.82rem;color:#65758a;margin-top:4px;">Keep your account secure by updating your password regularly.</p>
+                                </div>
+                                <div style="width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#e4f6eb;color:#16a34a;flex:0 0 40px;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                                        <path d="M6 10V7a6 6 0 0 1 12 0v3M5 10h14v11H5V10Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <form method="POST" action="/staff/profile/password" style="margin-top:1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="currentPassword">Current Password</label>
+                                    <input id="currentPassword" name="currentPassword" type="password" class="form-control" placeholder="Enter your current password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="newPassword">New Password</label>
+                                    <input id="newPassword" name="newPassword" type="password" class="form-control" placeholder="Enter a new password" minlength="6" required>
+                                    <small class="form-text">Use at least 6 characters. Mix letters, numbers, and symbols for best security.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="confirmPassword">Confirm New Password</label>
+                                    <input id="confirmPassword" name="confirmPassword" type="password" class="form-control" placeholder="Re-enter your new password" minlength="6" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                        <path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                    </svg>
+                                    Update Password
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="card" style="background:#fffbf0;border:1px solid #fbe9c9;">
+                            <div style="display:flex;gap:14px;align-items:flex-start;">
+                                <div style="width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#fff1d8;color:#f59e0b;flex:0 0 40px;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                                        <path d="M12 9v4M12 17h.01M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div style="flex:1;">
+                                    <h3 style="font-size:1rem;color:#78350f;letter-spacing:-0.02em;">Security Tips</h3>
+                                    <p style="margin-top:6px;font-size:0.84rem;color:#78350f;line-height:1.65;">
+                                        Choose a strong password that you do not use elsewhere. If you ever suspect your account has been compromised,
+                                        change your password immediately and notify an administrator.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var toggle = document.querySelector('.sidebar-toggle');
+            var sidebar = document.querySelector('.app-sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (toggle && sidebar) {
+                toggle.addEventListener('click', function(){
+                    sidebar.classList.toggle('is-open');
+                    if (overlay) overlay.classList.toggle('is-open');
+                });
+                if (overlay) {
+                    overlay.addEventListener('click', function(){
+                        sidebar.classList.remove('is-open');
+                        overlay.classList.remove('is-open');
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

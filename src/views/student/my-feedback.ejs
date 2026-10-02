@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Feedback | EduVoice</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include("../partials/navbar") %>
+
+    <main class="container">
+        <h1>My Feedback</h1>
+
+        <a href="/student/submit">+ Submit New Feedback</a>
+
+        <% if (feedbackList.length === 0) { %>
+            <p>You haven't submitted any feedback yet.</p>
+        <% } else { %>
+
+            <% feedbackList.forEach(feedback => { %>
+                <article class="feedback-card">
+                    <h2>
+                        <a href="/student/my-feedback/<%= feedback.id %>">
+                            <%= feedback.title %>
+                        </a>
+                    </h2>
+
+                    <p>Category: <%= feedback.category_name || "Uncategorized" %></p>
+                    <p>Status: <strong><%= feedback.status %></strong></p>
+                    <p>
+                        Submitted:
+                        <%= new Date(feedback.created_at).toLocaleDateString() %>
+                    </p>
+                </article>
+            <% }) %>
+
+        <% } %>
+    </main>
+
+</body>
+</html>

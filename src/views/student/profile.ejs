@@ -1,0 +1,125 @@
+<%- include("../partials/head") %>
+<%- include("../partials/sidebar") %>
+
+<main class="container">
+    <%- include("../partials/alerts") %>
+
+    <section class="page-header">
+        <div>
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Account</p>
+            <h1>My Profile</h1>
+            <p class="page-subtitle">View and manage your account information.</p>
+        </div>
+    </section>
+
+    <section class="profile-header-card">
+        <div class="profile-avatar-lg">
+            <%= user.name.charAt(0).toUpperCase() %>
+        </div>
+        <div class="profile-info">
+            <h2><%= user.name %></h2>
+            <div class="profile-info-meta">
+                <div class="info-chip">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    <%= user.email %>
+                </div>
+                <div class="info-chip">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 7v6c0 5 3.8 9.3 9 11 5.2-1.7 9-6 9-11V7l-9-5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m8.5 12 2.2 2.2 4.8-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Student ID: <%= user.student_id %>
+                </div>
+                <div class="info-chip info-chip-role">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    Student
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="profile-forms-grid">
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <h2>Edit Name</h2>
+                    <p>Update your display name.</p>
+                </div>
+                <div class="form-icon icon-blue">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </div>
+            </div>
+            <form class="submission-form" action="/student/profile/update-name" method="POST">
+                <div class="form-field">
+                    <label for="name">Full Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value="<%= user.name %>"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+                <div class="form-actions">
+                    <button class="button button-primary" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <h2>Change Password</h2>
+                    <p>Keep your account secure with a strong password.</p>
+                </div>
+                <div class="form-icon icon-green">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </div>
+            </div>
+            <form class="submission-form" action="/student/profile/change-password" method="POST">
+                <div class="form-field">
+                    <label for="current_password">Current Password</label>
+                    <input
+                        type="password"
+                        id="current_password"
+                        name="current_password"
+                        autocomplete="current-password"
+                        placeholder="Enter your current password"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="new_password">New Password</label>
+                    <input
+                        type="password"
+                        id="new_password"
+                        name="new_password"
+                        autocomplete="new-password"
+                        placeholder="Enter your new password"
+                        minlength="6"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        autocomplete="new-password"
+                        placeholder="Re-enter your new password"
+                        minlength="6"
+                        required
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button class="button button-primary" type="submit">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

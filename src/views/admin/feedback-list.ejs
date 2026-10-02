@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Feedback | EduVoice</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include("../partials/navbar") %>
+
+    <main class="container">
+        <h1>Manage Student Feedback</h1>
+        <p>Review and manage feedback submitted by students.</p>
+
+        <% if (feedbackList.length === 0) { %>
+            <p>No feedback has been submitted yet.</p>
+        <% } else { %>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Student</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% feedbackList.forEach(feedback => { %>
+                        <tr>
+                            <td><%= feedback.title %></td>
+                            <td><%= feedback.student_name %></td>
+                            <td><%= feedback.category_name || "Uncategorized" %></td>
+                            <td><%= feedback.status %></td>
+                            <td>
+                                <%= new Date(feedback.created_at).toLocaleDateString() %>
+                            </td>
+                            <td>
+                                <a href="/admin/feedback/<%= feedback.id %>">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+        <% } %>
+    </main>
+
+</body>
+</html>

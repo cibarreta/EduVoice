@@ -1,0 +1,151 @@
+<%- include("../partials/head") %>
+<%- include("../partials/sidebar") %>
+
+<main class="container">
+    <%- include("../partials/alerts") %>
+
+    <a class="back-link" href="/student/submissions">&larr; Back to Submissions</a>
+
+    <section class="page-header page-header-detail">
+        <div>
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Reference #<%= submission.id %></p>
+            <div class="detail-title-row">
+                <% if (submission.type === 'feedback') { %>
+                    <span class="badge badge-type-feedback badge-lg">Feedback</span>
+                <% } else { %>
+                    <span class="badge badge-type-suggestion badge-lg">Suggestion</span>
+                <% } %>
+                <h1><%= submission.title %></h1>
+            </div>
+        </div>
+        <div class="detail-status-block">
+            <% if (submission.status === 'pending') { %>
+                <span class="badge badge-status-pending badge-lg">Pending</span>
+            <% } else if (submission.status === 'in_progress') { %>
+                <span class="badge badge-status-progress badge-lg">In Progress</span>
+            <% } else if (submission.status === 'resolved') { %>
+                <span class="badge badge-status-resolved badge-lg">Resolved</span>
+            <% } else { %>
+                <span class="badge badge-status-default badge-lg"><%= submission.status %></span>
+            <% } %>
+        </div>
+    </section>
+
+    <div class="detail-grid">
+        <div class="detail-main">
+
+            <div class="detail-card">
+                <div class="detail-meta-row">
+                    <div class="meta-block">
+                        <p class="meta-label">Category</p>
+                        <p class="meta-value"><%= submission.category_name || "Uncategorized" %></p>
+                    </div>
+                    <div class="meta-block">
+                        <p class="meta-label">Submitted On</p>
+                        <p class="meta-value"><%= new Date(submission.created_at).toLocaleString() %></p>
+                    </div>
+                    <% if (submission.is_anonymous) { %>
+                        <div class="meta-block">
+                            <p class="meta-label">Visibility</p>
+                            <p class="meta-value">
+                                <span class="anon-badge">Anonymous</span>
+                            </p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="detail-section">
+                    <h2>Description</h2>
+                    <div class="description-body">
+                        <p><%= submission.description %></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-section-header">
+                    <h2>Admin Responses</h2>
+                    <span class="responses-count"><%= responses.length %> response<%= responses.length !== 1 ? 's' : '' %></span>
+                </div>
+
+                <% if (responses.length === 0) { %>
+                    <div class="empty-state empty-state-sm">
+                        <div class="empty-icon empty-icon-sm">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>No responses yet</h3>
+                        <p>A school administrator will review and respond to your submission soon.</p>
+                    </div>
+                <% } else { %>
+                    <div class="responses-list">
+                        <% responses.forEach(resp => { %>
+                            <article class="response-card">
+                                <div class="response-header">
+                                    <div class="response-author">
+                                        <div class="response-avatar">
+                                            <%= (resp.admin_name || 'Admin').charAt(0).toUpperCase() %>
+                                        </div>
+                                        <div>
+                                            <p class="response-name"><%= resp.admin_name || 'Administrator' %></p>
+                                            <p class="response-date"><%= new Date(resp.created_at).toLocaleString() %></p>
+                                        </div>
+                                    </div>
+                                    <span class="response-label">Response</span>
+                                </div>
+                                <div class="response-body">
+                                    <p><%= resp.response %></p>
+                                </div>
+                            </article>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+
+        </div>
+
+        <aside class="detail-sidebar">
+            <div class="detail-card">
+                <h2>Summary</h2>
+                <ul class="summary-list">
+                    <li>
+                        <span class="summary-label">Reference</span>
+                        <span class="summary-value">#<%= submission.id %></span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Type</span>
+                        <span class="summary-value capitalize"><%= submission.type %></span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Status</span>
+                        <span class="summary-value">
+                            <% if (submission.status === 'pending') { %>
+                                <span class="badge badge-status-pending">Pending</span>
+                            <% } else if (submission.status === 'in_progress') { %>
+                                <span class="badge badge-status-progress">In Progress</span>
+                            <% } else if (submission.status === 'resolved') { %>
+                                <span class="badge badge-status-resolved">Resolved</span>
+                            <% } else { %>
+                                <span class="badge badge-status-default"><%= submission.status %></span>
+                            <% } %>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Category</span>
+                        <span class="summary-value"><%= submission.category_name || "Uncategorized" %></span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Submitted</span>
+                        <span class="summary-value"><%= new Date(submission.created_at).toLocaleDateString() %></span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Responses</span>
+                        <span class="summary-value"><%= responses.length %></span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</main>
+
+</body>
+</html>

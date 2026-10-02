@@ -1,0 +1,68 @@
+<%- include("../partials/head") %>
+<%- include("../partials/sidebar") %>
+
+<main class="container">
+    <%- include("../partials/alerts") %>
+
+    <section class="page-header">
+        <div>
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Share Feedback</p>
+            <h1>Submit Feedback</h1>
+            <p class="page-subtitle">Share your suggestions, concerns, or feedback with the school.</p>
+        </div>
+        <a class="button button-outline" href="/student/dashboard">&larr; Back to Dashboard</a>
+    </section>
+
+    <div class="form-card">
+        <form class="submission-form" action="/student/submit-feedback" method="POST">
+
+            <div class="form-field">
+                <label for="title">Feedback Title</label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    maxlength="200"
+                    placeholder="Briefly describe your feedback"
+                    required
+                >
+            </div>
+
+            <div class="form-field">
+                <label for="category_id">Category</label>
+                <select id="category_id" name="category_id" required>
+                    <option value="">Select a category</option>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category.id %>">
+                            <%= category.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="7"
+                    placeholder="Provide details and context to help the school understand your feedback"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" id="is_anonymous" name="is_anonymous" value="1">
+                <label for="is_anonymous">Submit anonymously (your identity will not be shown to reviewers)</label>
+            </div>
+
+            <div class="form-actions">
+                <button class="button button-primary" type="submit">Submit Feedback</button>
+                <a class="button button-outline" href="/student/dashboard">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

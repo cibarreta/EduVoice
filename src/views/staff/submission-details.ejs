@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Submission Details | EduVoice" }) %>
+</head>
+<body>
+    <div class="app-shell">
+        <%- include("../partials/sidebar", { role: "staff" }) %>
+        <div class="app-main">
+            <div class="app-topbar">
+                <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="app-sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                        <path d="M4 7h16M4 12h16M4 17h16" stroke="#12356a" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <a href="/staff/submissions" style="display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;border:1px solid #e7edf5;background:#ffffff;color:#12356a;text-decoration:none;transition:all 150ms ease;">
+                            <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                                <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <h1 class="page-title" style="margin:0;">Submission Details</h1>
+                    </div>
+                    <p class="page-subtitle" style="margin-top:4px;margin-left:44px;">Review and respond to student submission</p>
+                </div>
+                <div class="topbar-actions">
+                    <a class="btn btn-secondary" href="/staff/submissions">Back to List</a>
+                </div>
+            </div>
+            <div class="app-content">
+                <%- include("../partials/alerts") %>
+
+                <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;">
+                    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                        <div class="card">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+                                <div style="flex:1;min-width:0;">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <span style="font-family:'Courier New',monospace;font-size:0.8rem;font-weight:650;color:#2364bd;background:#eaf2ff;padding:4px 10px;border-radius:7px;"><%= submission.reference || '#' + submission.id %></span>
+                                        <span class="badge <%= submission.type === 'suggestion' ? 'badge-suggestion' : 'badge-feedback' %>" style="text-transform:capitalize;"><%= submission.type %></span>
+                                        <span class="badge <%= submission.status === 'pending' ? 'badge-pending' : submission.status === 'under_review' ? 'badge-review' : submission.status === 'in_progress' ? 'badge-progress' : submission.status === 'resolved' ? 'badge-resolved' : 'badge-rejected' %>">
+                                            <%= (submission.status || 'pending').replace(/_/g, ' ') %>
+                                        </span>
+                                    </div>
+                                    <h2 style="margin-top:14px;font-size:1.4rem;color:#12356a;letter-spacing:-0.02em;line-height:1.35;"><%= submission.title %></h2>
+                                    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px;">
+                                        <div style="display:flex;align-items:center;gap:7px;">
+                                            <div style="width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:#e4effd;color:#2c5a93;font-size:0.75rem;font-weight:700;">
+                                                <%= (submission.student_name || 'S').charAt(0).toUpperCase() %>
+                                            </div>
+                                            <div>
+                                                <div style="font-size:0.86rem;font-weight:650;color:#172b4d;"><%= submission.student_name || 'Student' %></div>
+                                                <div style="font-size:0.72rem;color:#65758a;">Student</div>
+                                            </div>
+                                        </div>
+                                        <div style="width:1px;height:28px;background:#e7edf5;"></div>
+                                        <div>
+                                            <div style="font-size:0.72rem;color:#65758a;">Category</div>
+                                            <div style="font-size:0.86rem;font-weight:650;color:#172b4d;"><%= submission.category_name || 'General' %></div>
+                                        </div>
+                                        <div style="width:1px;height:28px;background:#e7edf5;"></div>
+                                        <div>
+                                            <div style="font-size:0.72rem;color:#65758a;">Submitted</div>
+                                            <div style="font-size:0.86rem;font-weight:650;color:#172b4d;"><%= new Date(submission.created_at).toLocaleDateString() %></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid #edf1f6;">
+                                <div style="font-size:0.76rem;font-weight:700;color:#65758a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Description</div>
+                                <div style="line-height:1.75;color:#2d3f58;font-size:0.95rem;white-space:pre-wrap;"><%= submission.description %></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+                                <h3 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;">Response History</h3>
+                                <span style="font-size:0.78rem;color:#65758a;"><%= (responses ? responses.length : 0) %> <%= (responses && responses.length === 1) ? 'response' : 'responses' %></span>
+                            </div>
+
+                            <% if (responses && responses.length > 0) { %>
+                                <div style="display:flex;flex-direction:column;gap:14px;">
+                                    <% responses.forEach(function(resp) { %>
+                                        <div style="border:1px solid #e7edf5;border-radius:12px;padding:18px;">
+                                            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                                                <div style="display:flex;align-items:center;gap:10px;">
+                                                    <div style="width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:<%= resp.staff_name ? '#e0f0ff' : '#e4f6eb' %>;color:<%= resp.staff_name ? '#2364bd' : '#16a34a' %>;font-size:0.8rem;font-weight:700;">
+                                                        <%= (resp.staff_name ? resp.staff_name.charAt(0) : 'S').toUpperCase() %>
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-size:0.88rem;font-weight:650;color:#172b4d;"><%= resp.staff_name || 'System' %></div>
+                                                        <div style="font-size:0.72rem;color:#65758a;"><%= resp.role || 'Staff' %> · <%= new Date(resp.created_at).toLocaleString() %></div>
+                                                    </div>
+                                                </div>
+                                                <% if (resp.status_update) { %>
+                                                    <span class="badge <%= resp.status_update === 'pending' ? 'badge-pending' : resp.status_update === 'under_review' ? 'badge-review' : resp.status_update === 'in_progress' ? 'badge-progress' : resp.status_update === 'resolved' ? 'badge-resolved' : 'badge-rejected' %>" style="font-size:0.7rem;">
+                                                        Status: <%= resp.status_update.replace(/_/g, ' ') %>
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                            <% if (resp.message) { %>
+                                                <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f1f5fa;line-height:1.7;color:#2d3f58;font-size:0.92rem;white-space:pre-wrap;"><%= resp.message %></div>
+                                            <% } %>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <div class="empty-state" style="padding:32px 20px;">
+                                    <div style="width:46px;height:46px;margin:0 auto 12px;display:grid;place-items:center;border-radius:14px;background:#f3f6fa;color:#8090a4;">
+                                        <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                            <path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size:0.95rem;">No responses yet</h3>
+                                    <p style="font-size:0.82rem;">You will be the first to respond to this submission.</p>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="card">
+                            <h3 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;margin-bottom:6px;">Add Response</h3>
+                            <p style="font-size:0.82rem;color:#65758a;margin-bottom:1.25rem;">Share an update with the student. Responses are visible to the submitter.</p>
+                            <form method="POST" action="/staff/submissions/<%= submission.id %>/respond">
+                                <div class="form-group">
+                                    <label class="form-label" for="responseMessage">Your Message</label>
+                                    <textarea id="responseMessage" name="message" rows="6" class="form-textarea" placeholder="Type your response to the student here..." required></textarea>
+                                </div>
+                                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                            <path d="M4 12 20 4l-8 16-2-7-6-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        Send Response
+                                    </button>
+                                    <a href="/staff/submissions/<%= submission.id %>" class="btn btn-secondary">Clear</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                        <% if (canUpdateStatus) { %>
+                            <div class="card">
+                                <h3 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;margin-bottom:6px;">Update Status</h3>
+                                <p style="font-size:0.82rem;color:#65758a;margin-bottom:1.25rem;">Change the status of this submission.</p>
+                                <form method="POST" action="/staff/submissions/<%= submission.id %>/status">
+                                    <div class="form-group">
+                                        <label class="form-label">Status</label>
+                                        <select name="status" class="form-select" required>
+                                            <option value="">Select status</option>
+                                            <option value="pending" <%= submission.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                            <option value="under_review" <%= submission.status === 'under_review' ? 'selected' : '' %>>Under Review</option>
+                                            <option value="in_progress" <%= submission.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                                            <option value="resolved" <%= submission.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="statusNote">Optional Note</label>
+                                        <textarea id="statusNote" name="note" rows="3" class="form-textarea" placeholder="Add an optional note about this status change..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="width:100%;">Update Status</button>
+                                </form>
+                            </div>
+                        <% } %>
+
+                        <div class="card">
+                            <h3 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;margin-bottom:1rem;">Summary</h3>
+                            <div style="display:flex;flex-direction:column;gap:14px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                    <span style="font-size:0.82rem;color:#65758a;">Reference</span>
+                                    <span style="font-size:0.85rem;font-weight:650;color:#172b4d;font-family:'Courier New',monospace;"><%= submission.reference || '#' + submission.id %></span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                    <span style="font-size:0.82rem;color:#65758a;">Type</span>
+                                    <span style="text-transform:capitalize;font-size:0.85rem;font-weight:650;color:#172b4d;"><%= submission.type %></span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                    <span style="font-size:0.82rem;color:#65758a;">Category</span>
+                                    <span style="font-size:0.85rem;font-weight:650;color:#172b4d;"><%= submission.category_name || 'General' %></span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                    <span style="font-size:0.82rem;color:#65758a;">Status</span>
+                                    <span class="badge <%= submission.status === 'pending' ? 'badge-pending' : submission.status === 'under_review' ? 'badge-review' : submission.status === 'in_progress' ? 'badge-progress' : submission.status === 'resolved' ? 'badge-resolved' : 'badge-rejected' %>">
+                                        <%= (submission.status || 'pending').replace(/_/g, ' ') %>
+                                    </span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                    <span style="font-size:0.82rem;color:#65758a;">Student</span>
+                                    <span style="font-size:0.85rem;font-weight:650;color:#172b4d;"><%= submission.student_name || 'Student' %></span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                    <span style="font-size:0.82rem;color:#65758a;">Created</span>
+                                    <span style="font-size:0.85rem;font-weight:650;color:#172b4d;"><%= new Date(submission.created_at).toLocaleDateString() %></span>
+                                </div>
+                                <% if (submission.updated_at && submission.updated_at !== submission.created_at) { %>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                                        <span style="font-size:0.82rem;color:#65758a;">Updated</span>
+                                        <span style="font-size:0.85rem;font-weight:650;color:#172b4d;"><%= new Date(submission.updated_at).toLocaleDateString() %></span>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="card" style="background:linear-gradient(135deg,#eaf2ff 0%,#ffffff 100%);border:1px solid #d4e3f6;">
+                            <h3 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;margin-bottom:8px;">Need Help?</h3>
+                            <p style="font-size:0.82rem;color:#4d6078;line-height:1.6;margin-bottom:14px;">If you need assistance with this submission, contact your administrator.</p>
+                            <a href="/staff/submissions" class="btn btn-outline" style="width:100%;">View All Submissions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var toggle = document.querySelector('.sidebar-toggle');
+            var sidebar = document.querySelector('.app-sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (toggle && sidebar) {
+                toggle.addEventListener('click', function(){
+                    sidebar.classList.toggle('is-open');
+                    if (overlay) overlay.classList.toggle('is-open');
+                });
+                if (overlay) {
+                    overlay.addEventListener('click', function(){
+                        sidebar.classList.remove('is-open');
+                        overlay.classList.remove('is-open');
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

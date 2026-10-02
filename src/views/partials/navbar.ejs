@@ -1,0 +1,7 @@
+        <form action="/logout" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+
+        <% if (user && user.role === "admin") { %>
+            <a href="/admin/feedback">Manage Feedback</a>
+        <% } %>

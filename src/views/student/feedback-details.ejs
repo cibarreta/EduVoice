@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Details | EduVoice</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include("../partials/navbar") %>
+
+    <main class="container">
+        <a href="/student/my-feedback">← Back to My Feedback</a>
+
+        <h1><%= feedback.title %></h1>
+
+        <p>
+            Category:
+            <%= feedback.category_name || "Uncategorized" %>
+        </p>
+
+        <p>
+            Status:
+            <strong><%= feedback.status %></strong>
+        </p>
+
+        <p>
+            Submitted:
+            <%= new Date(feedback.created_at).toLocaleString() %>
+        </p>
+
+        <h2>Description</h2>
+        <p><%= feedback.description %></p>
+    </main>
+
+</body>
+</html>

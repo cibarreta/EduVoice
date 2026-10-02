@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Details | EduVoice</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <%- include("../partials/navbar") %>
+
+    <main class="container">
+        <a href="/admin/feedback">← Back to Feedback List</a>
+
+        <h1><%= feedback.title %></h1>
+
+        <h3>Student Information</h3>
+        <p>Name: <%= feedback.student_name %></p>
+        <p>Student ID: <%= feedback.student_id || "Not provided" %></p>
+        <p>Email: <%= feedback.student_email %></p>
+
+        <h3>Feedback Information</h3>
+        <p>Category: <%= feedback.category_name || "Uncategorized" %></p>
+        <p>Status: <strong><%= feedback.status %></strong></p>
+        <p>
+            Submitted:
+            <%= new Date(feedback.created_at).toLocaleString() %>
+        </p>
+
+        <h3>Description</h3>
+        <p><%= feedback.description %></p>
+
+        <hr>
+
+        <h2>Update Feedback Status</h2>
+
+        <form
+            action="/admin/feedback/<%= feedback.id %>/status"
+            method="POST"
+        >
+            <label for="status">Status</label>
+
+            <select id="status" name="status" required>
+                <% ["Pending", "Under Review", "In Progress", "Resolved", "Rejected"].forEach(status => { %>
+                    <option
+                        value="<%= status %>"
+                        <%= feedback.status === status ? "selected" : "" %>
+                    >
+                        <%= status %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <button type="submit">Update Status</button>
+        </form>
+
+        <hr>
+
+        <h2>Respond to Student</h2>
+
+        <form
+            action="/admin/feedback/<%= feedback.id %>/respond"
+            method="POST"
+        >
+            <label for="response">Your Response</label>
+
+            <textarea
+                id="response"
+                name="response"
+                rows="5"
+                required
+            ></textarea>
+
+            <button type="submit">Send Response</button>
+        </form>
+
+        <hr>
+
+        <h2>Response History</h2>
+
+        <% if (responses.length === 0) { %>
+            <p>No responses yet.</p>
+        <% } else { %>
+            <% responses.forEach(response => { %>
+                <article class="feedback-card">
+                    <p><strong><%= response.admin_name %></strong></p>
+                    <p><%= response.response %></p>
+                    <small>
+                        <%= new Date(response.created_at).toLocaleString() %>
+                    </small>
+                </article>
+            <% }) %>
+        <% }) %>
+
+    </main>
+
+</body>
+</html>

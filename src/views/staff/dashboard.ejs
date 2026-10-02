@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Staff Dashboard | EduVoice" }) %>
+</head>
+<body>
+    <div class="app-shell">
+        <%- include("../partials/sidebar", { role: "staff" }) %>
+        <div class="app-main">
+            <div class="app-topbar">
+                <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="app-sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                        <path d="M4 7h16M4 12h16M4 17h16" stroke="#12356a" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="topbar-title">
+                    <h1 class="page-title">Welcome Staff</h1>
+                    <p class="page-subtitle">Here is your assigned work for today</p>
+                </div>
+                <div class="topbar-actions">
+                    <a class="btn btn-outline" href="/staff/submissions">View All</a>
+                    <a class="btn btn-primary" href="/staff/profile">
+                        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        Profile
+                    </a>
+                </div>
+            </div>
+            <div class="app-content">
+                <%- include("../partials/alerts") %>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#eaf2ff;color:#2364bd;">
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                <path d="M8 12h8M8 8.8h5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value"><%= stats.assigned %></div>
+                        <div class="stat-label">Assigned Submissions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fff5e5;color:#f59e0b;">
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="1.8"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value"><%= stats.pending %></div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#efeaff;color:#7c3aed;">
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <path d="M4 6h16M4 12h10M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value"><%= stats.inProgress %></div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#e4f6eb;color:#16a34a;">
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <path d="M12 3 20 6v5.5c0 5.1-3.45 8.6-8 10.5-4.55-1.9-8-5.4-8-10.5V6l8-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                <path d="m8.5 12 2.2 2.2 4.8-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value"><%= stats.resolved %></div>
+                        <div class="stat-label">Resolved</div>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1.3fr 0.7fr;gap:1.25rem;margin-top:1.75rem;">
+                    <div class="card">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+                            <div>
+                                <h2 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;">Recently Assigned</h2>
+                                <p style="font-size:0.82rem;color:#65758a;margin-top:4px;">Submissions awaiting your review</p>
+                            </div>
+                            <a class="btn btn-outline" href="/staff/submissions" style="min-height:38px;padding:8px 14px;font-size:0.82rem;">See All</a>
+                        </div>
+
+                        <% if (recentSubmissions && recentSubmissions.length > 0) { %>
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                                <% recentSubmissions.forEach(function(sub) { %>
+                                    <a href="/staff/submissions/<%= sub.id %>" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid #e7edf5;border-radius:10px;text-decoration:none;color:inherit;transition:all 150ms ease;">
+                                        <div style="width:40px;height:40px;display:grid;place-items:center;border-radius:10px;background:<%= sub.type === 'suggestion' ? '#f3ecff' : '#e0f4f8' %>;color:<%= sub.type === 'suggestion' ? '#9333ea' : '#0891b2' %>;">
+                                            <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                                                <% if (sub.type === 'suggestion') { %>
+                                                    <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                                <% } else { %>
+                                                    <path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                                    <path d="M8 12h8M8 8.8h5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                                <% } %>
+                                            </svg>
+                                        </div>
+                                        <div style="flex:1;min-width:0;">
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <strong style="font-size:0.9rem;color:#172b4d;"><%= sub.title %></strong>
+                                                <span class="badge <%= sub.status === 'pending' ? 'badge-pending' : sub.status === 'in_progress' ? 'badge-progress' : sub.status === 'resolved' ? 'badge-resolved' : 'badge-review' %>"><%= (sub.status || '').replace(/_/g, ' ') %></span>
+                                            </div>
+                                            <div style="display:flex;gap:10px;align-items:center;margin-top:4px;">
+                                                <span style="font-size:0.74rem;color:#65758a;"><%= sub.reference || '#' + sub.id %></span>
+                                                <span style="font-size:0.74rem;color:#8090a4;">·</span>
+                                                <span style="font-size:0.74rem;color:#65758a;"><%= sub.category_name || 'General' %></span>
+                                                <span style="font-size:0.74rem;color:#8090a4;">·</span>
+                                                <span style="font-size:0.74rem;color:#65758a;"><%= new Date(sub.created_at).toLocaleDateString() %></span>
+                                            </div>
+                                        </div>
+                                        <div style="color:#8090a4;">
+                                            <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                                                <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </a>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <div style="width:52px;height:52px;margin:0 auto 14px;display:grid;place-items:center;border-radius:14px;background:#f3f6fa;color:#8090a4;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="26" height="26">
+                                        <path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3>No submissions assigned yet</h3>
+                                <p>Once work is assigned, you will see it here.</p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="card">
+                        <h2 style="font-size:1.05rem;color:#12356a;letter-spacing:-0.02em;margin-bottom:1.25rem;">Quick Actions</h2>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <a href="/staff/submissions?status=pending" class="btn btn-secondary" style="justify-content:flex-start;gap:12px;">
+                                <div style="width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#fff5e5;color:#f59e0b;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                                        <path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="1.8"/>
+                                    </svg>
+                                </div>
+                                <div style="text-align:left;">
+                                    <div style="font-weight:700;color:#172b4d;">Review Pending</div>
+                                    <div style="font-size:0.76rem;color:#65758a;font-weight:500;margin-top:2px;">Submissions waiting for review</div>
+                                </div>
+                            </a>
+                            <a href="/staff/submissions?status=in_progress" class="btn btn-secondary" style="justify-content:flex-start;gap:12px;">
+                                <div style="width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#efeaff;color:#7c3aed;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                                        <path d="M4 6h16M4 12h10M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <div style="text-align:left;">
+                                    <div style="font-weight:700;color:#172b4d;">Continue Work</div>
+                                    <div style="font-size:0.76rem;color:#65758a;font-weight:500;margin-top:2px;">Pick up open cases</div>
+                                </div>
+                            </a>
+                            <a href="/staff/submissions" class="btn btn-secondary" style="justify-content:flex-start;gap:12px;">
+                                <div style="width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#eaf2ff;color:#2364bd;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                                        <path d="M21 21l-4.25-4.25M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div style="text-align:left;">
+                                    <div style="font-weight:700;color:#172b4d;">Search & Filter</div>
+                                    <div style="font-size:0.76rem;color:#65758a;font-weight:500;margin-top:2px;">Browse all submissions</div>
+                                </div>
+                            </a>
+                            <a href="/staff/profile" class="btn btn-secondary" style="justify-content:flex-start;gap:12px;">
+                                <div style="width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#e4f6eb;color:#16a34a;">
+                                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <div style="text-align:left;">
+                                    <div style="font-weight:700;color:#172b4d;">Your Profile</div>
+                                    <div style="font-size:0.76rem;color:#65758a;font-weight:500;margin-top:2px;">Account settings</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var toggle = document.querySelector('.sidebar-toggle');
+            var sidebar = document.querySelector('.app-sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (toggle && sidebar) {
+                toggle.addEventListener('click', function(){
+                    sidebar.classList.toggle('is-open');
+                    if (overlay) overlay.classList.toggle('is-open');
+                });
+                if (overlay) {
+                    overlay.addEventListener('click', function(){
+                        sidebar.classList.remove('is-open');
+                        overlay.classList.remove('is-open');
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
