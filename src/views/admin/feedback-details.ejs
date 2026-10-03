@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% var title = "Feedback Details"; %>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/feedback", role: "admin" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'A') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Admin') %></strong>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <a href="/admin/feedback" class="back-link">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Feedback List
+            </a>
+
+            <section class="page-header">
+                <div>
+                    <h1><%= feedback.title %></h1>
+                    <p>Student feedback details and response management.</p>
+                </div>
+            </section>
+
+            <div class="grid-2">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Feedback Information</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label">Student Name</span>
+                                <span class="info-value"><%= feedback.student_name %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Student ID</span>
+                                <span class="info-value"><%= feedback.student_id || "Not provided" %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Email</span>
+                                <span class="info-value"><%= feedback.student_email %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value"><%= feedback.category_name || "Uncategorized" %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="info-value"><strong><%= feedback.status %></strong></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Submitted</span>
+                                <span class="info-value"><%= new Date(feedback.created_at).toLocaleString() %></span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:18px;">
+                            <div style="font-size:0.82rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Description</div>
+                            <div class="description-box"><%= feedback.description %></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Update Feedback Status</h2>
+                        </div>
+                        <div class="panel-body">
+                            <form
+                                action="/admin/feedback/<%= feedback.id %>/status"
+                                method="POST"
+                            >
+                                <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                                <div class="field">
+                                    <label for="status">Status</label>
+                                    <select id="status" name="status" required>
+                                        <% ["Pending", "Under Review", "In Progress", "Resolved", "Rejected"].forEach(status => { %>
+                                            <option
+                                                value="<%= status %>"
+                                                <%= feedback.status === status ? "selected" : "" %>
+                                            >
+                                                <%= status %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Update Status</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Respond to Student</h2>
+                        </div>
+                        <div class="panel-body">
+                            <form
+                                action="/admin/feedback/<%= feedback.id %>/respond"
+                                method="POST"
+                            >
+                                <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                                <div class="field">
+                                    <label for="response">Your Response</label>
+                                    <textarea
+                                        id="response"
+                                        name="response"
+                                        rows="5"
+                                        required
+                                    ></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-accent">Send Response</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Response History</h2>
+                </div>
+                <div class="panel-body">
+                    <% if (responses.length === 0) { %>
+                        <div class="empty-responses">
+                            <p style="color:var(--gray-500);">No responses yet.</p>
+                        </div>
+                    <% } else { %>
+                        <div class="responses-list">
+                            <% responses.forEach(response => { %>
+                                <article class="response-card">
+                                    <div class="response-head">
+                                        <div class="response-author">
+                                            <div class="response-avatar"><%= response.admin_name ? response.admin_name.charAt(0).toUpperCase() : 'A' %></div>
+                                            <div>
+                                                <strong><%= response.admin_name %></strong>
+                                            </div>
+                                        </div>
+                                        <div class="response-date">
+                                            <%= new Date(response.created_at).toLocaleString() %>
+                                        </div>
+                                    </div>
+                                    <div class="response-body"><%= response.response %></div>
+                                </article>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; <%= new Date().getFullYear() %> EduVoice — Admin Portal</p>
+        </footer>
+    </div>
+</body>
+</html>

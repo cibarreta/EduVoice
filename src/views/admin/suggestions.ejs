@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% var title = "Manage Suggestions"; %>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/suggestions", role: "admin" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'A') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Admin') %></strong>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="page-header">
+                <div>
+                    <h1>Student Suggestions <span class="page-header-badge" style="display:inline-block;padding:5px 12px;border-radius:999px;background:#eef4ff;color:#1e40af;font-size:0.72rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;vertical-align:middle;margin-left:10px;">Ideas</span></h1>
+                    <p>Review and manage student suggestions to improve the school community.</p>
+                </div>
+            </section>
+
+            <form class="filters-panel" method="GET" action="/admin/suggestions">
+                <div class="filters-grid">
+                    <div class="field">
+                        <label for="search">Search</label>
+                        <input id="search" name="search" type="text" placeholder="Search by title, student, ID..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                    </div>
+                    <div class="field">
+                        <label for="category">Category</label>
+                        <select id="category" name="category">
+                            <option value="">All Categories</option>
+                            <% if (typeof categories !== 'undefined' && categories) { %>
+                                <% categories.forEach(function(cat) { %>
+                                    <option value="<%= cat.id %>" <%= typeof selectedCategory !== 'undefined' && selectedCategory == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="">All Statuses</option>
+                            <% if (typeof statuses !== 'undefined' && statuses) { %>
+                                <% statuses.forEach(function(st) { %>
+                                    <option value="<%= st %>" <%= typeof selectedStatus !== 'undefined' && selectedStatus === st ? 'selected' : '' %>><%= st %></option>
+                                <% }) %>
+                            <% } else { %>
+                                <% ['Pending','Under Review','In Progress','Resolved','Rejected'].forEach(function(st) { %>
+                                    <option value="<%= st %>" <%= typeof selectedStatus !== 'undefined' && selectedStatus === st ? 'selected' : '' %>><%= st %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="priority">Priority</label>
+                        <select id="priority" name="priority">
+                            <option value="">All Priorities</option>
+                            <% ['Low','Normal','High','Urgent'].forEach(function(value) { %>
+                                <option value="<%= value %>" <%= selectedPriority === value ? 'selected' : '' %>><%= value %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="department_id">Department</label>
+                        <select id="department_id" name="department_id">
+                            <option value="">All Departments</option>
+                            <% departments.forEach(function(department) { %>
+                                <option value="<%= department.id %>" <%= selectedDepartment == department.id ? 'selected' : '' %>><%= department.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="dateFrom">Date From</label>
+                        <input id="dateFrom" name="dateFrom" type="date" value="<%= typeof dateFrom !== 'undefined' ? dateFrom : '' %>">
+                    </div>
+                    <div class="field">
+                        <label for="dateTo">Date To</label>
+                        <input id="dateTo" name="dateTo" type="date" value="<%= typeof dateTo !== 'undefined' ? dateTo : '' %>">
+                    </div>
+                    <div class="field">
+                        <label for="sort">Sort by</label>
+                        <select id="sort" name="sort">
+                            <option value="newest" <%= selectedSort === 'newest' ? 'selected' : '' %>>Newest</option>
+                            <option value="oldest" <%= selectedSort === 'oldest' ? 'selected' : '' %>>Oldest</option>
+                            <option value="status" <%= selectedSort === 'status' ? 'selected' : '' %>>Status</option>
+                            <option value="title" <%= selectedSort === 'title' ? 'selected' : '' %>>Title</option>
+                        </select>
+                    </div>
+                    <div class="filters-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            Filter
+                        </button>
+                        <a href="/admin/suggestions" class="btn btn-outline">Clear</a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-wrap">
+                <% if (typeof submissions !== 'undefined' && submissions && submissions.length) { %>
+                    <div style="overflow-x:auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% submissions.forEach(function(sub) { %>
+                                    <tr>
+                                        <td><span class="link-id">#<%= sub.id %></span></td>
+                                        <td>
+                                            <div class="student-cell">
+                                                <strong><%= sub.student_name || 'Anonymous' %></strong>
+                                                <% if (sub.student_id) { %><small>ID: <%= sub.student_id %></small><% } %>
+                                            </div>
+                                        </td>
+                                        <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;color:var(--gray-900);"><%= sub.title %></td>
+                                        <td><%= sub.category_name || 'Uncategorized' %></td>
+                                        <td>
+                                            <% if (sub.status === 'Pending') { %>
+                                                <span class="badge badge-amber">Pending</span>
+                                            <% } else if (sub.status === 'Under Review') { %>
+                                                <span class="badge badge-blue">Under Review</span>
+                                            <% } else if (sub.status === 'In Progress') { %>
+                                                <span class="badge badge-violet">In Progress</span>
+                                            <% } else if (sub.status === 'Resolved') { %>
+                                                <span class="badge badge-green">Resolved</span>
+                                            <% } else if (sub.status === 'Rejected') { %>
+                                                <span class="badge badge-red">Rejected</span>
+                                            <% } else { %>
+                                                <span class="badge badge-violet"><%= sub.status %></span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= new Date(sub.created_at).toLocaleDateString() %></td>
+                                        <td>
+                                            <a href="/admin/submissions/<%= sub.id %>" class="btn-sm-view">View</a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        </div>
+                        <h3>No suggestions found</h3>
+                        <p>There are no suggestion submissions matching your current filters. Try adjusting your search criteria.</p>
+                    </div>
+                <% } %>
+
+                <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                    <div class="pagination">
+                        <div class="pagination-info">
+                            Showing page <strong><%= typeof page !== 'undefined' ? page : 1 %></strong> of <strong><%= totalPages %></strong>
+                        </div>
+                        <div class="pagination-controls">
+                            <%
+                                var currentPage = typeof page !== 'undefined' ? page : 1;
+                                var baseUrl = '/admin/suggestions?';
+                                if (typeof searchQuery !== 'undefined' && searchQuery) baseUrl += 'search=' + encodeURIComponent(searchQuery) + '&';
+                                if (typeof selectedCategory !== 'undefined' && selectedCategory) baseUrl += 'category=' + encodeURIComponent(selectedCategory) + '&';
+                                if (typeof selectedStatus !== 'undefined' && selectedStatus) baseUrl += 'status=' + encodeURIComponent(selectedStatus) + '&';
+                                if (typeof selectedPriority !== 'undefined' && selectedPriority) baseUrl += 'priority=' + encodeURIComponent(selectedPriority) + '&';
+                                if (typeof selectedDepartment !== 'undefined' && selectedDepartment) baseUrl += 'department_id=' + encodeURIComponent(selectedDepartment) + '&';
+                                if (typeof dateFrom !== 'undefined' && dateFrom) baseUrl += 'dateFrom=' + encodeURIComponent(dateFrom) + '&';
+                                if (typeof dateTo !== 'undefined' && dateTo) baseUrl += 'dateTo=' + encodeURIComponent(dateTo) + '&';
+                                if (typeof selectedSort !== 'undefined' && selectedSort) baseUrl += 'sort=' + encodeURIComponent(selectedSort) + '&';
+                            %>
+                            <a href="<%= baseUrl %>page=1" class="page-btn" <%= currentPage <= 1 ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="First page">«</a>
+                            <a href="<%= baseUrl %>page=<%= currentPage - 1 %>" class="page-btn" <%= currentPage <= 1 ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="Previous page">‹</a>
+                            <%
+                                var startPage = Math.max(1, currentPage - 2);
+                                var endPage = Math.min(totalPages, currentPage + 2);
+                                if (startPage > 1) { %><span class="dots">…</span><% }
+                                for (var p = startPage; p <= endPage; p++) {
+                            %>
+                                <a href="<%= baseUrl %>page=<%= p %>" class="page-btn <%= p === currentPage ? 'is-active' : '' %>"><%= p %></a>
+                            <%
+                                }
+                                if (endPage < totalPages) { %><span class="dots">…</span><% }
+                            %>
+                            <a href="<%= baseUrl %>page=<%= currentPage + 1 %>" class="page-btn" <%= currentPage >= totalPages ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="Next page">›</a>
+                            <a href="<%= baseUrl %>page=<%= totalPages %>" class="page-btn" <%= currentPage >= totalPages ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="Last page">»</a>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; <%= new Date().getFullYear() %> EduVoice — Admin Portal</p>
+        </footer>
+    </div>
+</body>
+</html>

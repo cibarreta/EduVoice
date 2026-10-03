@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% var title = "Admin Profile"; %>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/profile", role: "admin" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'A') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Admin') %></strong>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content" style="max-width: 860px;">
+            <section class="page-header">
+                <div>
+                    <h1>Admin Profile</h1>
+                    <p>Manage your account details and credentials.</p>
+                </div>
+            </section>
+
+            <div class="profile-header-card" style="background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);border-radius:16px;padding:32px 28px;margin-bottom:22px;color:#fff;box-shadow:0 8px 24px rgba(18,53,106,0.18);position:relative;overflow:hidden;">
+                <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
+                <div style="position:absolute;right:60px;bottom:-60px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+                <div class="profile-hero" style="display:flex;align-items:center;gap:22px;position:relative;z-index:1;">
+                    <div class="profile-avatar-lg" style="width:86px;height:86px;border-radius:50%;background:rgba(255,255,255,0.15);color:#fff;display:grid;place-items:center;font-size:2.3rem;font-weight:750;letter-spacing:-0.04em;border:3px solid rgba(255,255,255,0.25);backdrop-filter:blur(4px);flex-shrink:0;"><%= user ? (user.name ? user.name.charAt(0).toUpperCase() : 'A') : 'A' %></div>
+                    <div class="profile-hero-info">
+                        <h2 style="font-size:1.55rem;letter-spacing:-0.025em;margin-bottom:4px;"><%= user ? (user.name || 'Administrator') : 'Administrator' %></h2>
+                        <div class="email" style="color:rgba(255,255,255,0.82);font-size:0.92rem;margin-bottom:10px;"><%= user ? (user.email || 'no-email@edovoice.edu') : 'no-email@edovoice.edu' %></div>
+                        <div class="profile-hero-tags" style="display:flex;gap:8px;">
+                            <span class="tag-pill" style="display:inline-block;padding:5px 12px;border-radius:999px;font-size:0.74rem;font-weight:700;background:rgba(255,255,255,0.18);color:#fff;letter-spacing:0.03em;">Administrator</span>
+                            <% if (user && user.created_at) { %>
+                                <span class="tag-pill" style="display:inline-block;padding:5px 12px;border-radius:999px;font-size:0.74rem;font-weight:700;background:rgba(255,255,255,0.18);color:#fff;letter-spacing:0.03em;">Since <%= new Date(user.created_at).toLocaleDateString() %></span>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="ico" style="width:32px;height:32px;border-radius:9px;background:#eef4ff;color:var(--navy);display:inline-grid;place-items:center;margin-right:10px;vertical-align:middle;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </span>
+                        Update Profile
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <div class="readonly-info" style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+                        <h4 style="font-size:0.78rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;font-weight:700;">Account Credentials</h4>
+                        <div class="readonly-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div class="readonly-item">
+                                <label style="display:block;font-size:0.72rem;color:var(--gray-500);font-weight:650;margin-bottom:3px;">Email Address</label>
+                                <span style="font-size:0.9rem;color:var(--gray-900);font-weight:500;"><%= user ? (user.email || 'Not set') : 'Not set' %></span>
+                            </div>
+                            <div class="readonly-item">
+                                <label style="display:block;font-size:0.72rem;color:var(--gray-500);font-weight:650;margin-bottom:3px;">Role</label>
+                                <span style="font-size:0.9rem;color:var(--gray-900);font-weight:500;">Administrator</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="/admin/profile/update-name">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label for="name">Display Name</label>
+                                <input id="name" name="name" type="text" value="<%= user ? (user.name || '') : '' %>" placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="reset" class="btn btn-outline">Reset</button>
+                            <button type="submit" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="ico b" style="width:32px;height:32px;border-radius:9px;background:#fff7e6;color:#b45309;display:inline-grid;place-items:center;margin-right:10px;vertical-align:middle;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </span>
+                        Change Password
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <form method="POST" action="/admin/profile/change-password">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="field">
+                            <label for="currentPassword">Current Password</label>
+                            <input id="currentPassword" name="currentPassword" type="password" placeholder="Enter your current password" required>
+                        </div>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="newPassword">New Password <span class="hint" style="color:var(--gray-500);font-weight:500;font-size:0.76rem;">min 8 characters</span></label>
+                                <input id="newPassword" name="newPassword" type="password" placeholder="Create a new password" required minlength="8">
+                            </div>
+                            <div class="field">
+                                <label for="confirmPassword">Confirm New Password</label>
+                                <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Re-enter new password" required minlength="8">
+                            </div>
+                        </div>
+                        <div class="password-hint" style="font-size:0.78rem;color:var(--gray-500);line-height:1.5;margin-top:-6px;margin-bottom:14px;padding-left:2px;">
+                            Strong password requirements:
+                            <ul style="margin:4px 0 0 18px;">
+                                <li>At least 8 characters long</li>
+                                <li>Include uppercase and lowercase letters</li>
+                                <li>Include numbers or special characters</li>
+                            </ul>
+                        </div>
+                        <div class="form-actions">
+                            <button type="reset" class="btn btn-outline">Clear</button>
+                            <button type="submit" class="btn btn-accent">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; <%= new Date().getFullYear() %> EduVoice — Admin Portal</p>
+        </footer>
+    </div>
+</body>
+</html>

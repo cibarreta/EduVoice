@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, activePage: (typeof activePage !== 'undefined' ? activePage : ''), role: 'student', currentPath: (typeof currentPath !== 'undefined' ? currentPath : '') }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'S') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Student') %></strong>
+                    <span>Student</span>
+                </div>
+            </div>
+        </header>
+
+        <% if (typeof pageTitle !== 'undefined' && pageTitle) { %>
+            <div class="page-header">
+                <h1><%= pageTitle %></h1>
+                <% if (typeof pageSubtitle !== 'undefined' && pageSubtitle) { %><p><%= pageSubtitle %></p><% } %>
+            </div>
+        <% } %>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <%- body %>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

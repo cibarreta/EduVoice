@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% var title = "Manage Users"; %>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/users", role: "admin" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'A') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Admin') %></strong>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="page-header">
+                <div>
+                    <h1>Users</h1>
+                    <p>Manage students, staff, and administrator accounts.</p>
+                </div>
+            </section>
+
+            <form class="filters-panel" method="GET" action="/admin/users">
+                <div class="filters-grid" style="grid-template-columns: 2.5fr 1fr auto;">
+                    <div class="field">
+                        <label for="search">Search</label>
+                        <input id="search" name="search" type="text" placeholder="Search by name, email, or student ID..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                    </div>
+                    <div class="field">
+                        <label for="role">Role</label>
+                        <select id="role" name="role">
+                            <option value="" <%= typeof selectedRole !== 'undefined' && !selectedRole ? 'selected' : '' %>>All Roles</option>
+                            <option value="student" <%= typeof selectedRole !== 'undefined' && selectedRole === 'student' ? 'selected' : '' %>>Student</option>
+                            <option value="staff" <%= typeof selectedRole !== 'undefined' && selectedRole === 'staff' ? 'selected' : '' %>>Staff</option>
+                            <option value="admin" <%= typeof selectedRole !== 'undefined' && selectedRole === 'admin' ? 'selected' : '' %>>Admin</option>
+                        </select>
+                    </div>
+                    <div class="filters-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            Filter
+                        </button>
+                        <a href="/admin/users" class="btn btn-outline">Clear</a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-wrap">
+                <% if (typeof users !== 'undefined' && users && users.length) { %>
+                    <div style="overflow-x:auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Student ID</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% users.forEach(function(u) {
+                                    var bgColors = { admin: 'var(--violet)', staff: 'var(--blue)', student: 'var(--navy)' };
+                                %>
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="user-avatar-sm" style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:0.85rem;flex-shrink:0;background:<%= bgColors[u.role] || 'var(--navy)' %>;"><%= u.name ? u.name.charAt(0).toUpperCase() : '?' %></div>
+                                                <div class="user-meta" style="margin-left:12px;">
+                                                    <strong style="display:block;color:var(--gray-900);font-size:0.9rem;"><%= u.name || 'Unnamed User' %></strong>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-size:0.85rem;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= u.email || '—' %></td>
+                                        <td>
+                                            <% if (u.role === 'admin') { %>
+                                                <span class="role-badge role-admin">Admin</span>
+                                            <% } else if (u.role === 'staff') { %>
+                                                <span class="role-badge role-staff">Staff</span>
+                                            <% } else { %>
+                                                <span class="role-badge role-student">Student</span>
+                                            <% } %>
+                                        </td>
+                                        <td style="font-family:'Consolas',monospace;font-size:0.82rem;"><%= u.student_id || '—' %></td>
+                                        <td>
+                                            <% if (typeof u.is_active === false || u.is_active === 0) { %>
+                                                <span class="badge-user-inactive">Inactive</span>
+                                            <% } else { %>
+                                                <span class="badge-user-active">Active</span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= u.created_at ? new Date(u.created_at).toLocaleDateString() : '—' %></td>
+                                        <td>
+                                            <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;">
+                                                <a href="/admin/users/<%= u.id %>" class="btn-sm btn-sm-view" style="padding:5px 11px;border-radius:7px;font-size:0.78rem;font-weight:600;font-family:inherit;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;background:var(--navy);color:#fff;">View</a>
+                                                <form method="POST" action="/admin/users/<%= u.id %>/role" style="display:inline;">
+                                                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                                                    <select class="table-role-select" name="role" onchange="this.form.submit()">
+                                                        <option value="">Edit Role</option>
+                                                        <option value="student" <%= u.role === 'student' ? 'selected disabled' : '' %>>Student</option>
+                                                        <option value="staff" <%= u.role === 'staff' ? 'selected disabled' : '' %>>Staff</option>
+                                                        <option value="admin" <%= u.role === 'admin' ? 'selected disabled' : '' %>>Admin</option>
+                                                    </select>
+                                                </form>
+                                                <form method="POST" action="/admin/users/<%= u.id %>/toggle-active" onsubmit="return confirm('Toggle user status?');" style="display:inline;">
+                                                    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                                                    <button type="submit" class="btn-sm btn-sm-warn" style="padding:5px 11px;border-radius:7px;font-size:0.78rem;font-weight:600;font-family:inherit;border:1px solid #fde68a;cursor:pointer;background:#fff7e6;color:#b45309;">
+                                                        <% if (typeof u.is_active === false || u.is_active === 0) { %>Activate<% } else { %>Deactivate<% } %>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>No users found</h3>
+                        <p>There are no users matching your current filters.</p>
+                    </div>
+                <% } %>
+
+                <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                    <div class="pagination">
+                        <div class="pagination-info">
+                            Showing page <strong><%= typeof page !== 'undefined' ? page : 1 %></strong> of <strong><%= totalPages %></strong>
+                        </div>
+                        <div class="pagination-controls">
+                            <%
+                                var currentPage = typeof page !== 'undefined' ? page : 1;
+                                var baseUrl = '/admin/users?';
+                                if (typeof searchQuery !== 'undefined' && searchQuery) baseUrl += 'search=' + encodeURIComponent(searchQuery) + '&';
+                                if (typeof selectedRole !== 'undefined' && selectedRole) baseUrl += 'role=' + encodeURIComponent(selectedRole) + '&';
+                            %>
+                            <a href="<%= baseUrl %>page=1" class="page-btn" <%= currentPage <= 1 ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="First page">«</a>
+                            <a href="<%= baseUrl %>page=<%= currentPage - 1 %>" class="page-btn" <%= currentPage <= 1 ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="Previous page">‹</a>
+                            <%
+                                var startPage = Math.max(1, currentPage - 2);
+                                var endPage = Math.min(totalPages, currentPage + 2);
+                                if (startPage > 1) { %><span class="dots">…</span><% }
+                                for (var p = startPage; p <= endPage; p++) {
+                            %>
+                                <a href="<%= baseUrl %>page=<%= p %>" class="page-btn <%= p === currentPage ? 'is-active' : '' %>"><%= p %></a>
+                            <%
+                                }
+                                if (endPage < totalPages) { %><span class="dots">…</span><% }
+                            %>
+                            <a href="<%= baseUrl %>page=<%= currentPage + 1 %>" class="page-btn" <%= currentPage >= totalPages ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="Next page">›</a>
+                            <a href="<%= baseUrl %>page=<%= totalPages %>" class="page-btn" <%= currentPage >= totalPages ? 'disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;"' : '' %> aria-label="Last page">»</a>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; <%= new Date().getFullYear() %> EduVoice — Admin Portal</p>
+        </footer>
+    </div>
+</body>
+</html>

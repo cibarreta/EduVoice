@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% var title = "Manage Feedback"; %>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/feedback", role: "admin" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'A') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Admin') %></strong>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="page-header">
+                <div>
+                    <h1>Manage Student Feedback</h1>
+                    <p>Review and manage feedback submitted by students.</p>
+                </div>
+            </section>
+
+            <div class="panel">
+                <div class="table-wrap" style="border:0;border-radius:0;box-shadow:none;">
+                    <% if (feedbackList.length === 0) { %>
+                        <div style="padding: 70px 30px; text-align: center;">
+                            <p style="color:var(--gray-500);font-size:0.95rem;">No feedback has been submitted yet.</p>
+                        </div>
+                    <% } else { %>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Student</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% feedbackList.forEach(feedback => { %>
+                                    <tr>
+                                        <td><%= feedback.title %></td>
+                                        <td><%= feedback.student_name %></td>
+                                        <td><%= feedback.category_name || "Uncategorized" %></td>
+                                        <td><%= feedback.status %></td>
+                                        <td>
+                                            <%= new Date(feedback.created_at).toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/feedback/<%= feedback.id %>" class="btn-sm-view">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; <%= new Date().getFullYear() %> EduVoice — Admin Portal</p>
+        </footer>
+    </div>
+</body>
+</html>

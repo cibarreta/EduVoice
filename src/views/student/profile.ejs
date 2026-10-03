@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/student/profile", role: "student" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'S') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Student') %></strong>
+                    <span>Student</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="page-header">
+                <div>
+                    <p class="eyebrow"><span class="eyebrow-dot"></span> Account</p>
+                    <h1>My Profile</h1>
+                    <p class="page-subtitle">View and manage your account information.</p>
+                </div>
+            </section>
+
+            <section class="profile-header-card">
+                <div class="profile-avatar-lg">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'S') %>
+                </div>
+                <div class="profile-info">
+                    <h2><%= typeof user !== 'undefined' ? user.name : 'Student' %></h2>
+                    <div class="profile-info-meta">
+                        <div class="info-chip">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            <%= typeof user !== 'undefined' ? user.email : '' %>
+                        </div>
+                        <% if (typeof user !== 'undefined' && user.student_id) { %>
+                            <div class="info-chip">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 7v6c0 5 3.8 9.3 9 11 5.2-1.7 9-6 9-11V7l-9-5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m8.5 12 2.2 2.2 4.8-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Student ID: <%= user.student_id %>
+                            </div>
+                        <% } %>
+                        <div class="info-chip info-chip-role">
+                            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            Student
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="profile-forms-grid">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div>
+                            <h2>Edit Name</h2>
+                            <p>Update your display name.</p>
+                        </div>
+                        <div class="form-icon icon-blue">
+                            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        </div>
+                    </div>
+                    <form class="submission-form" action="/student/profile/update-name" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="form-field">
+                            <label for="name">Full Name</label>
+                            <div class="input-wrap">
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value="<%= typeof user !== 'undefined' ? user.name : '' %>"
+                                    maxlength="100"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="button button-primary" type="submit">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div>
+                            <h2>Change Password</h2>
+                            <p>Keep your account secure with a strong password.</p>
+                        </div>
+                        <div class="form-icon icon-green">
+                            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        </div>
+                    </div>
+                    <form class="submission-form" action="/student/profile/change-password" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="form-field">
+                            <label for="current_password">Current Password</label>
+                            <div class="input-wrap">
+                                <input
+                                    type="password"
+                                    id="current_password"
+                                    name="current_password"
+                                    autocomplete="current-password"
+                                    placeholder="Enter your current password"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="new_password">New Password</label>
+                            <div class="input-wrap">
+                                <input
+                                    type="password"
+                                    id="new_password"
+                                    name="new_password"
+                                    autocomplete="new-password"
+                                    placeholder="Enter your new password"
+                                    minlength="8"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="confirm_password">Confirm New Password</label>
+                            <div class="input-wrap">
+                                <input
+                                    type="password"
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    autocomplete="new-password"
+                                    placeholder="Re-enter your new password"
+                                    minlength="8"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="button button-primary" type="submit">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

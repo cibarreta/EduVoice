@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#12356a">
+    <title>Invalid Request</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="error-page">
+    <div class="error-card" role="alert">
+        <p class="error-code">Error <%= typeof statusCode !== "undefined" ? statusCode : 400 %></p>
+        <h1>Invalid Request</h1>
+        <p class="error-message"><%= typeof message !== "undefined" && message ? message : "Please check your request and try again." %></p>
+        <div class="error-actions">
+            <a class="error-btn error-btn-primary" href="javascript:history.back()">Go Back</a>
+            <a class="error-btn error-btn-secondary" href="/">Go Home</a>
+        </div>
+    </div>
+</body>
+</html>

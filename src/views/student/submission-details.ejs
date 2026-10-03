@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/student/submissions/" + (typeof submission !== 'undefined' ? submission.id : ''), role: "student" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'S') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Student') %></strong>
+                    <span>Student</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <% if (typeof submission !== 'undefined') { %>
+                <a class="back-link" href="/student/submissions">&larr; Back to Submissions</a>
+
+                <section class="page-header page-header-detail">
+                    <div>
+                        <p class="eyebrow"><span class="eyebrow-dot"></span> Reference #<%= submission.id %></p>
+                        <div class="detail-title-row">
+                            <% if (submission.type === 'feedback') { %>
+                                <span class="badge badge-type-feedback badge-lg">Feedback</span>
+                            <% } else { %>
+                                <span class="badge badge-type-suggestion badge-lg">Suggestion</span>
+                            <% } %>
+                            <h1><%= submission.title %></h1>
+                        </div>
+                    </div>
+                    <div class="detail-status-block">
+                        <% if (submission.status === 'Pending') { %>
+                            <span class="badge badge-status-pending badge-lg">Pending</span>
+                        <% } else if (submission.status === 'In Progress' || submission.status === 'Under Review') { %>
+                            <span class="badge badge-status-progress badge-lg">In Progress</span>
+                        <% } else if (submission.status === 'Resolved') { %>
+                            <span class="badge badge-status-resolved badge-lg">Resolved</span>
+                        <% } else if (submission.status === 'Review') { %>
+                            <span class="badge badge-status-review badge-lg">Review</span>
+                        <% } else if (submission.status === 'Rejected') { %>
+                            <span class="badge badge-status-rejected badge-lg">Rejected</span>
+                        <% } else { %>
+                            <span class="badge badge-status-default badge-lg"><%= submission.status %></span>
+                        <% } %>
+                    </div>
+                </section>
+
+                <div class="detail-grid">
+                    <div class="detail-main">
+
+                        <div class="detail-card">
+                            <div class="detail-meta-row">
+                                <div class="meta-block">
+                                    <p class="meta-label">Category</p>
+                                    <p class="meta-value"><%= submission.category_name || "Uncategorized" %></p>
+                                </div>
+                                <div class="meta-block">
+                                    <p class="meta-label">Priority</p>
+                                    <p class="meta-value"><%= submission.priority || "Normal" %></p>
+                                </div>
+                                <div class="meta-block">
+                                    <p class="meta-label">Submitted On</p>
+                                    <p class="meta-value"><%= new Date(submission.created_at).toLocaleString() %></p>
+                                </div>
+                                <% if (submission.is_anonymous) { %>
+                                    <div class="meta-block">
+                                        <p class="meta-label">Visibility</p>
+                                        <p class="meta-value">
+                                            <span class="anon-badge">Anonymous</span>
+                                        </p>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="detail-section">
+                                <h2>Description</h2>
+                                <div class="description-body">
+                                    <p><%= submission.description %></p>
+                                </div>
+                            </div>
+                            <% if (submission.resolution_notes) { %>
+                                <div class="detail-section">
+                                    <h2>Resolution Notes</h2>
+                                    <div class="description-body"><p><%= submission.resolution_notes %></p></div>
+                                </div>
+                            <% } %>
+                            <% if (submission.attachments && submission.attachments.length) { %>
+                                <div class="detail-section">
+                                    <h2>Attachments</h2>
+                                    <ul><% submission.attachments.forEach(file => { %><li><a href="/attachments/<%= file.id %>"><%= file.original_name %></a> (<%= Math.ceil(file.size_bytes / 1024) %> KB)</li><% }) %></ul>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="detail-card">
+                            <div class="detail-section-header">
+                                <h2>Responses</h2>
+                                <span class="responses-count"><%= (typeof responses !== 'undefined' ? responses.length : 0) %> response<%= (typeof responses !== 'undefined' && responses.length !== 1) ? 's' : '' %></span>
+                            </div>
+
+                            <% if (typeof responses === 'undefined' || responses.length === 0) { %>
+                                <div class="empty-state empty-state-sm">
+                                    <div class="empty-icon empty-icon-sm">
+                                        <svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <h3>No responses yet</h3>
+                                    <p>A school administrator will review and respond to your submission soon.</p>
+                                </div>
+                            <% } else { %>
+                                <div class="responses-list">
+                                    <% responses.forEach(resp => { %>
+                                        <article class="response-card">
+                                            <div class="response-header">
+                                                <div class="response-author">
+                                                    <div class="response-avatar">
+                                                        <%= (resp.admin_name || (resp.responder_name ? resp.responder_name : 'Admin')).charAt(0).toUpperCase() %>
+                                                    </div>
+                                                    <div>
+                                                        <p class="response-name"><%= resp.responder_name || 'School staff' %></p>
+                                                        <p class="response-date"><%= new Date(resp.created_at).toLocaleString() %></p>
+                                                    </div>
+                                                </div>
+                                                <span class="response-label">Response</span>
+                                            </div>
+                                            <div class="response-body">
+                                                <p><%= resp.response %></p>
+                                            </div>
+                                        </article>
+                                    <% }) %>
+                                </div>
+                            <% } %>
+                        </div>
+
+                    </div>
+
+                    <aside class="detail-sidebar">
+                        <div class="detail-card">
+                            <h2>Summary</h2>
+                            <ul class="summary-list">
+                                <li>
+                                    <span class="summary-label">Reference</span>
+                                    <span class="summary-value">#<%= submission.id %></span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Type</span>
+                                    <span class="summary-value capitalize"><%= submission.type %></span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Status</span>
+                                    <span class="summary-value">
+                                        <% if (submission.status === 'Pending') { %>
+                                            <span class="badge badge-status-pending">Pending</span>
+                                        <% } else if (submission.status === 'In Progress' || submission.status === 'Under Review') { %>
+                                            <span class="badge badge-status-progress">In Progress</span>
+                                        <% } else if (submission.status === 'Resolved') { %>
+                                            <span class="badge badge-status-resolved">Resolved</span>
+                                        <% } else if (submission.status === 'Review') { %>
+                                            <span class="badge badge-status-review">Review</span>
+                                        <% } else if (submission.status === 'Rejected') { %>
+                                            <span class="badge badge-status-rejected">Rejected</span>
+                                        <% } else { %>
+                                            <span class="badge badge-status-default"><%= submission.status %></span>
+                                        <% } %>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Category</span>
+                                    <span class="summary-value"><%= submission.category_name || "Uncategorized" %></span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Submitted</span>
+                                    <span class="summary-value"><%= new Date(submission.created_at).toLocaleDateString() %></span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Responses</span>
+                                    <span class="summary-value"><%= typeof responses !== 'undefined' ? responses.length : 0 %></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            <% } %>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

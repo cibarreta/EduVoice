@@ -1,0 +1,6 @@
+<% if (typeof success !== 'undefined' && success) { %>
+    <div class="app-alert app-alert-success" role="status"><%= success %></div>
+<% } %>
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="app-alert app-alert-error" role="alert"><%= error %></div>
+<% } %>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Audit Logs" }) %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/audit-logs", role: "admin" }) %>
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user"><div class="topbar-user-avatar" aria-hidden="true"><%= user.name.charAt(0).toUpperCase() %></div><div class="topbar-user-meta"><strong><%= user.name %></strong><span>Admin</span></div></div>
+        </header>
+        <main class="app-content">
+            <section class="page-header"><div><p class="eyebrow"><span class="eyebrow-dot"></span> Administration</p><h1>Audit Logs</h1><p class="page-subtitle">Recent administrative and feedback workflow events.</p></div></section>
+            <% if (!logs.length) { %>
+                <div class="empty-state"><h3>No audit events yet</h3></div>
+            <% } else { %>
+                <div class="table-wrapper">
+                    <table class="submissions-table">
+                        <thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Record</th><th>Details</th></tr></thead>
+                        <tbody>
+                            <% logs.forEach(log => { %>
+                                <tr>
+                                    <td><%= new Date(log.created_at).toLocaleString() %></td>
+                                    <td><%= log.actor_name || "System" %><% if (log.actor_email) { %><br><small><%= log.actor_email %></small><% } %></td>
+                                    <td><%= log.action %></td>
+                                    <td><%= log.entity_type %><%= log.entity_id ? ` #${log.entity_id}` : "" %></td>
+                                    <td><%= log.details ? (typeof log.details === "string" ? log.details : JSON.stringify(log.details)) : "—" %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </main>
+        <footer class="app-footer"><p>&copy; 2026 EduVoice. All rights reserved.</p></footer>
+    </div>
+</body>
+</html>

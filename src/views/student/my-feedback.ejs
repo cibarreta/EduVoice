@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/student/my-feedback", role: "student" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'S') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Student') %></strong>
+                    <span>Student</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="page-header">
+                <div>
+                    <p class="eyebrow"><span class="eyebrow-dot"></span> Your Feedback</p>
+                    <h1>My Feedback</h1>
+                    <p class="page-subtitle">View and track all feedback you have submitted.</p>
+                </div>
+                <a class="button button-primary" href="/student/submit-feedback">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 12h8M8 8.8h5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    Submit New Feedback
+                </a>
+            </section>
+
+            <% if (typeof feedbackList !== 'undefined' && feedbackList.length === 0) { %>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3>No feedback yet</h3>
+                    <p>You haven't submitted any feedback yet.</p>
+                    <a class="button button-primary" href="/student/submit-feedback">Share Your Feedback</a>
+                </div>
+            <% } else if (typeof feedbackList !== 'undefined') { %>
+                <section class="section-panel">
+                    <div class="section-panel-header">
+                        <div>
+                            <h2>All Feedback</h2>
+                            <p><%= feedbackList.length %> item<%= feedbackList.length !== 1 ? 's' : '' %></p>
+                        </div>
+                    </div>
+
+                    <div class="submission-list">
+                        <% feedbackList.forEach(feedback => { %>
+                            <a class="submission-row" href="/student/my-feedback/<%= feedback.id %>">
+                                <div class="submission-row-main">
+                                    <div class="submission-row-type">
+                                        <span class="badge badge-type-feedback">Feedback</span>
+                                    </div>
+                                    <div class="submission-row-body">
+                                        <h3 class="submission-row-title"><%= feedback.title %></h3>
+                                        <p class="submission-row-meta">
+                                            <span class="meta-category"><%= feedback.category_name || "Uncategorized" %></span>
+                                            <span class="meta-date">
+                                                <%= new Date(feedback.created_at).toLocaleDateString() %>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="submission-row-right">
+                                    <% if (feedback.status === 'Pending') { %>
+                                        <span class="badge badge-status-pending">Pending</span>
+                                    <% } else if (feedback.status === 'In Progress' || feedback.status === 'Under Review') { %>
+                                        <span class="badge badge-status-progress">In Progress</span>
+                                    <% } else if (feedback.status === 'Resolved') { %>
+                                        <span class="badge badge-status-resolved">Resolved</span>
+                                    <% } else if (feedback.status === 'Review') { %>
+                                        <span class="badge badge-status-review">Review</span>
+                                    <% } else if (feedback.status === 'Rejected') { %>
+                                        <span class="badge badge-status-rejected">Rejected</span>
+                                    <% } else { %>
+                                        <span class="badge badge-status-default"><%= feedback.status %></span>
+                                    <% } %>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                </section>
+            <% } %>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Notifications" }) %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/notifications", role: user.role }) %>
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true"><%= user.name.charAt(0).toUpperCase() %></div>
+                <div class="topbar-user-meta"><strong><%= user.name %></strong><span><%= user.role %></span></div>
+            </div>
+        </header>
+        <div class="app-alerts"><%- include("../partials/alerts") %></div>
+        <main class="app-content">
+            <section class="page-header">
+                <div><p class="eyebrow"><span class="eyebrow-dot"></span> Updates</p><h1>Notifications</h1></div>
+                <% if (notifications.some(item => !item.read_at)) { %>
+                    <form action="/notifications/read-all" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button class="button button-outline" type="submit">Mark all as read</button>
+                    </form>
+                <% } %>
+            </section>
+            <% if (notifications.length === 0) { %>
+                <div class="empty-state"><h3>You're all caught up</h3><p>New submission updates will appear here.</p></div>
+            <% } else { %>
+                <div class="table-wrapper">
+                    <table class="submissions-table">
+                        <thead><tr><th>Update</th><th>Details</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <% notifications.forEach(item => {
+                                const detailPath = user.role === "admin"
+                                    ? `/admin/submissions/${item.feedback_id}`
+                                    : user.role === "staff"
+                                        ? `/staff/submissions/${item.feedback_id}`
+                                        : `/student/submissions/${item.feedback_id}`;
+                            %>
+                                <tr>
+                                    <td><strong><%= item.title %></strong><% if (!item.read_at) { %> <span class="badge badge-status-progress">New</span><% } %></td>
+                                    <td><%= item.message %></td>
+                                    <td><%= new Date(item.created_at).toLocaleString() %></td>
+                                    <td>
+                                        <% if (item.feedback_id) { %><a class="button button-outline" href="<%= detailPath %>">Open</a><% } %>
+                                        <% if (!item.read_at) { %>
+                                            <form action="/notifications/<%= item.id %>/read" method="POST" style="display:inline">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                <input type="hidden" name="return_to" value="/notifications">
+                                                <button class="button button-outline" type="submit">Mark read</button>
+                                            </form>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </main>
+        <footer class="app-footer"><p>&copy; 2026 EduVoice. All rights reserved.</p></footer>
+    </div>
+</body>
+</html>
