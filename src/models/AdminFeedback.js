@@ -253,7 +253,13 @@ async function assignStaff(id, assigned_to) {
     return result.affectedRows;
 }
 
-async function getAllRecent(limit) {
+async function getAllRecent(limit = 5) {
+    const parsedLimit = Number(limit);
+    const safeLimit =
+        Number.isSafeInteger(parsedLimit) && parsedLimit > 0
+            ? Math.min(parsedLimit, 100)
+            : 5;
+
     const [rows] = await db.execute(`
         SELECT
             f.*,
@@ -265,8 +271,8 @@ async function getAllRecent(limit) {
         LEFT JOIN categories c ON f.category_id = c.id
         LEFT JOIN departments d ON f.department_id = d.id
         ORDER BY f.created_at DESC
-        LIMIT ?
-    `, [Number(limit)]);
+        LIMIT ${safeLimit}
+    `);
 
     return rows;
 }
