@@ -1,0 +1,165 @@
+                                                    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Staff Profile" }) %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: staff, currentPath: "/staff/profile", role: "staff" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof staff !== 'undefined' && staff && staff.name ? staff.name.charAt(0).toUpperCase() : 'F') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof staff !== 'undefined' && staff ? staff.name : 'Faculty') %></strong>
+                    <span>Faculty</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-header">
+            <h1>My Profile</h1>
+            <p>Manage your account information and password</p>
+        </div>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="profile-header-card">
+                <div class="profile-avatar-lg">
+                    <%= (staff.name || staff.email || 'S').charAt(0).toUpperCase() %>
+                </div>
+                <div class="profile-info">
+                    <h2><%= staff.name || 'Staff Member' %></h2>
+                    <div class="profile-info-meta">
+                        <div class="info-chip">
+                            <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            <%= staff.email %>
+                        </div>
+                        <div class="info-chip info-chip-role">
+                            <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            <%= (staff.role || 'Staff').charAt(0).toUpperCase() + (staff.role || 'Staff').slice(1) %>
+                        </div>
+                        <div class="info-chip">
+                            <%= staff.department_name || 'No department assigned' %>
+                        </div>
+                        <% if (staff.created_at) { %>
+                        <div class="info-chip">
+                            <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg>
+                            Joined <%= new Date(staff.created_at).toLocaleDateString() %>
+                        </div>
+                        <% } %>
+                        <form action="/logout" method="POST" style="margin-left:auto;">
+                            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                            <button type="submit" class="btn btn-danger btn-sm" style="gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <div class="profile-forms-grid">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div>
+                            <h2>Edit Name</h2>
+                            <p>Update your display name shown across the system.</p>
+                        </div>
+                        <div class="form-icon icon-blue">
+                            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        </div>
+                    </div>
+                    <form method="POST" action="/staff/profile/update-name">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="form-field">
+                            <label for="editName">Full Name</label>
+                            <input id="editName" name="name" type="text" value="<%= staff.name || '' %>" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="editEmail">Email</label>
+                            <input id="editEmail" type="email" value="<%= staff.email %>" disabled>
+                            <small class="form-text">Email address cannot be changed here. Contact an administrator.</small>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                    <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div>
+                            <h2>Change Password</h2>
+                            <p>Keep your account secure by updating your password regularly.</p>
+                        </div>
+                        <div class="form-icon icon-green">
+                            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        </div>
+                    </div>
+                    <form method="POST" action="/staff/profile/change-password">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="form-field">
+                            <label for="currentPassword">Current Password</label>
+                            <input id="currentPassword" name="current_password" type="password" placeholder="Enter your current password" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="newPassword">New Password</label>
+                            <input id="newPassword" name="new_password" type="password" placeholder="Enter a new password" minlength="8" required>
+                            <small class="form-text">Use at least 8 characters. Mix letters, numbers, and symbols for best security.</small>
+                        </div>
+                        <div class="form-field">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input id="confirmPassword" name="confirm_password" type="password" placeholder="Re-enter your new password" minlength="8" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                    <path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                </svg>
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card" style="background:#fffbf0;border:1px solid #fbe9c9;margin-top:1.5rem;">
+                <div style="display:flex;gap:14px;align-items:flex-start;">
+                    <div style="width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#fff1d8;color:#f59e0b;flex:0 0 40px;">
+                        <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                            <path d="M12 9v4M12 17h.01M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div style="flex:1;">
+                        <h3 style="font-size:1rem;color:#78350f;letter-spacing:-0.02em;">Security Tips</h3>
+                        <p style="margin-top:6px;font-size:0.84rem;color:#78350f;line-height:1.65;">
+                            Choose a strong password that you do not use elsewhere. If you ever suspect your account has been compromised,
+                            change your password immediately and notify an administrator.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

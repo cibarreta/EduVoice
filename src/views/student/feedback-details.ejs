@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/student/my-feedback/" + (typeof feedback !== 'undefined' ? feedback.id : ''), role: "student" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'S') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Student') %></strong>
+                    <span>Student</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <% if (typeof feedback !== 'undefined') { %>
+                <a class="back-link" href="/student/my-feedback">&larr; Back to My Feedback</a>
+
+                <section class="page-header page-header-detail">
+                    <div>
+                        <p class="eyebrow"><span class="eyebrow-dot"></span> Reference #<%= feedback.id %></p>
+                        <div class="detail-title-row">
+                            <span class="badge badge-type-feedback badge-lg">Feedback</span>
+                            <h1><%= feedback.title %></h1>
+                        </div>
+                    </div>
+                    <div class="detail-status-block">
+                        <% if (feedback.status === 'Pending') { %>
+                            <span class="badge badge-status-pending badge-lg">Pending</span>
+                        <% } else if (feedback.status === 'In Progress' || feedback.status === 'Under Review') { %>
+                            <span class="badge badge-status-progress badge-lg">In Progress</span>
+                        <% } else if (feedback.status === 'Resolved') { %>
+                            <span class="badge badge-status-resolved badge-lg">Resolved</span>
+                        <% } else if (feedback.status === 'Review') { %>
+                            <span class="badge badge-status-review badge-lg">Review</span>
+                        <% } else if (feedback.status === 'Rejected') { %>
+                            <span class="badge badge-status-rejected badge-lg">Rejected</span>
+                        <% } else { %>
+                            <span class="badge badge-status-default badge-lg"><%= feedback.status %></span>
+                        <% } %>
+                    </div>
+                </section>
+
+                <div class="detail-grid">
+                    <div class="detail-main">
+
+                        <div class="detail-card">
+                            <div class="detail-meta-row">
+                                <div class="meta-block">
+                                    <p class="meta-label">Category</p>
+                                    <p class="meta-value"><%= feedback.category_name || "Uncategorized" %></p>
+                                </div>
+                                <div class="meta-block">
+                                    <p class="meta-label">Submitted On</p>
+                                    <p class="meta-value"><%= new Date(feedback.created_at).toLocaleString() %></p>
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h2>Description</h2>
+                                <div class="description-body">
+                                    <p><%= feedback.description %></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <aside class="detail-sidebar">
+                        <div class="detail-card">
+                            <h2>Summary</h2>
+                            <ul class="summary-list">
+                                <li>
+                                    <span class="summary-label">Reference</span>
+                                    <span class="summary-value">#<%= feedback.id %></span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Type</span>
+                                    <span class="summary-value capitalize">Feedback</span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Status</span>
+                                    <span class="summary-value">
+                                        <% if (feedback.status === 'Pending') { %>
+                                            <span class="badge badge-status-pending">Pending</span>
+                                        <% } else if (feedback.status === 'In Progress' || feedback.status === 'Under Review') { %>
+                                            <span class="badge badge-status-progress">In Progress</span>
+                                        <% } else if (feedback.status === 'Resolved') { %>
+                                            <span class="badge badge-status-resolved">Resolved</span>
+                                        <% } else if (feedback.status === 'Review') { %>
+                                            <span class="badge badge-status-review">Review</span>
+                                        <% } else if (feedback.status === 'Rejected') { %>
+                                            <span class="badge badge-status-rejected">Rejected</span>
+                                        <% } else { %>
+                                            <span class="badge badge-status-default"><%= feedback.status %></span>
+                                        <% } %>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Category</span>
+                                    <span class="summary-value"><%= feedback.category_name || "Uncategorized" %></span>
+                                </li>
+                                <li>
+                                    <span class="summary-label">Submitted</span>
+                                    <span class="summary-value"><%= new Date(feedback.created_at).toLocaleDateString() %></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            <% } %>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% var title = "Statistics & Reports"; %>
+    <%- include("../partials/head") %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/admin/statistics", role: "admin" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'A') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Admin') %></strong>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <section class="page-header">
+                <div>
+                    <h1>Statistics Dashboard</h1>
+                    <p>Insights and reports on submissions, categories, and performance.</p>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <div class="stat-card c-navy">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="stat-label">Total Submissions</div>
+                    <div class="stat-value"><%= typeof totalSubmissions !== 'undefined' ? totalSubmissions : 0 %></div>
+                    <div class="stat-sub">All feedback + suggestions</div>
+                </div>
+                <div class="stat-card c-violet">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="stat-label">Feedback</div>
+                    <div class="stat-value" style="color:var(--violet);"><%= typeof feedbackCount !== 'undefined' ? feedbackCount : 0 %></div>
+                    <div class="stat-sub"><%= typeof totalSubmissions !== 'undefined' && totalSubmissions ? Math.round((feedbackCount || 0) / totalSubmissions * 100) : 0 %>% of total</div>
+                </div>
+                <div class="stat-card c-blue">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </div>
+                    <div class="stat-label">Suggestions</div>
+                    <div class="stat-value" style="color:var(--blue);"><%= typeof suggestionsCount !== 'undefined' ? suggestionsCount : 0 %></div>
+                    <div class="stat-sub"><%= typeof totalSubmissions !== 'undefined' && totalSubmissions ? Math.round((suggestionsCount || 0) / totalSubmissions * 100) : 0 %>% of total</div>
+                </div>
+                <div class="stat-card c-green">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="stat-label">Resolution Rate</div>
+                    <div class="stat-value" style="color:var(--success);"><%= typeof totalSubmissions !== 'undefined' && totalSubmissions ? Math.round(((resolvedCount || 0) / totalSubmissions) * 100) : 0 %>%</div>
+                    <div class="stat-sub"><%= typeof resolvedCount !== 'undefined' ? resolvedCount : 0 %> resolved</div>
+                </div>
+            </section>
+
+            <div class="grid-2">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Feedback vs Suggestions Ratio</h2>
+                        <span class="label-kicker" style="font-size:0.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Breakdown</span>
+                    </div>
+                    <div class="panel-body">
+                        <%
+                            var fb = typeof feedbackCount !== 'undefined' ? feedbackCount : 0;
+                            var sg = typeof suggestionsCount !== 'undefined' ? suggestionsCount : 0;
+                            var rt = fb + sg || 1;
+                            var fbPct = Math.round(fb / rt * 100);
+                            var sgPct = Math.round(sg / rt * 100);
+                        %>
+                        <div class="ratio-bar">
+                            <div class="ratio-bar-label"><strong style="display:inline-flex;align-items:center;gap:8px;"><span class="dot" style="width:10px;height:10px;border-radius:50%;display:inline-block;background:var(--blue);"></span>Feedback</strong><span><%= fb %> submissions · <%= fbPct %>%</span></div>
+                            <div class="ratio-bar-track"><div class="ratio-bar-value" style="width:<%= fbPct %>%"></div></div>
+                        </div>
+                        <div class="ratio-bar" style="margin-top:18px;">
+                            <div class="ratio-bar-label"><strong style="display:inline-flex;align-items:center;gap:8px;"><span class="dot" style="width:10px;height:10px;border-radius:50%;display:inline-block;background:var(--violet);"></span>Suggestions</strong><span><%= sg %> submissions · <%= sgPct %>%</span></div>
+                            <div class="ratio-bar-track"><div class="ratio-bar-value" style="width:<%= sgPct %>%;background:linear-gradient(90deg,var(--violet) 0%,#a78bfa 100%);"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Resolution Summary</h2>
+                        <span class="label-kicker" style="font-size:0.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Overview</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="resolution-grid">
+                            <div class="res-card">
+                                <h4>Resolved</h4>
+                                <div class="big" style="color:var(--success);"><%= typeof resolvedCount !== 'undefined' ? resolvedCount : 0 %></div>
+                                <div class="desc">Closed & complete</div>
+                            </div>
+                            <div class="res-card">
+                                <h4>In Progress</h4>
+                                <div class="big" style="color:var(--warning);"><%= typeof inProgressCount !== 'undefined' ? inProgressCount : 0 %></div>
+                                <div class="desc">Active handling</div>
+                            </div>
+                            <div class="res-card">
+                                <h4>Avg Time</h4>
+                                <div class="big" style="color:var(--navy);"><%= typeof avgResolutionDays !== 'undefined' ? avgResolutionDays : 0 %>d</div>
+                                <div class="desc">to close tickets</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-bottom:22px;">
+                <div class="panel-header">
+                    <h2>Status Distribution</h2>
+                    <span class="label-kicker" style="font-size:0.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Current state of submissions</span>
+                </div>
+                <div class="panel-body">
+                    <%
+                        var s_pending = typeof pendingCount !== 'undefined' ? pendingCount : 0;
+                        var s_review = typeof underReviewCount !== 'undefined' ? underReviewCount : 0;
+                        var s_progress = typeof inProgressCount !== 'undefined' ? inProgressCount : 0;
+                        var s_resolved = typeof resolvedCount !== 'undefined' ? resolvedCount : 0;
+                        var s_rejected = typeof rejectedCount !== 'undefined' ? rejectedCount : 0;
+                    %>
+                    <div class="status-cards">
+                        <div class="status-card amber">
+                            <div class="status-card-value"><%= s_pending %></div>
+                            <div class="status-card-label">Pending</div>
+                            <div class="status-card-bar" style="background:#fde68a;"></div>
+                        </div>
+                        <div class="status-card blue">
+                            <div class="status-card-value"><%= s_review %></div>
+                            <div class="status-card-label">Under Review</div>
+                            <div class="status-card-bar" style="background:#bfdbfe;"></div>
+                        </div>
+                        <div class="status-card violet">
+                            <div class="status-card-value"><%= s_progress %></div>
+                            <div class="status-card-label">In Progress</div>
+                            <div class="status-card-bar" style="background:#ddd6fe;"></div>
+                        </div>
+                        <div class="status-card green">
+                            <div class="status-card-value"><%= s_resolved %></div>
+                            <div class="status-card-label">Resolved</div>
+                            <div class="status-card-bar" style="background:#bbf7d0;"></div>
+                        </div>
+                        <div class="status-card red">
+                            <div class="status-card-value"><%= s_rejected %></div>
+                            <div class="status-card-label">Rejected</div>
+                            <div class="status-card-bar" style="background:#fecaca;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Categories Breakdown</h2>
+                        <span class="label-kicker" style="font-size:0.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Submissions per category</span>
+                    </div>
+                    <div class="panel-body">
+                        <%
+                            var catStatsExists = typeof categoryStats !== 'undefined' && categoryStats && categoryStats.length;
+                            var catMax = 1;
+                            if (catStatsExists) {
+                                categoryStats.forEach(function(c) { if (c.count > catMax) catMax = c.count; });
+                            }
+                        %>
+                        <% if (catStatsExists) { %>
+                            <% categoryStats.forEach(function(c) {
+                                var pct = Math.round(c.count / catMax * 100);
+                            %>
+                                <div class="cat-row">
+                                    <div class="cat-row-label"><%= c.name %></div>
+                                    <div class="cat-row-bar">
+                                        <span style="width:<%= pct %>%"></span>
+                                    </div>
+                                    <div class="cat-row-value"><%= c.count %></div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div style="padding:30px 10px;text-align:center;color:var(--gray-500);font-size:0.9rem;">
+                                No category data available yet.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Monthly Trends</h2>
+                        <span class="label-kicker" style="font-size:0.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Last 6 months</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-wrap" style="border:0;border-radius:0;box-shadow:none;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th class="num">Feedback</th>
+                                        <th class="num">Suggestions</th>
+                                        <th class="num">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <%
+                                        var mdExists = typeof monthlyData !== 'undefined' && monthlyData && monthlyData.length;
+                                    %>
+                                    <% if (mdExists) { %>
+                                        <% monthlyData.forEach(function(m) {
+                                            var t = (m.feedback || 0) + (m.suggestions || 0);
+                                        %>
+                                            <tr>
+                                                <td style="font-weight:600;color:var(--navy-dark);"><%= m.label %></td>
+                                                <td class="num"><%= m.feedback || 0 %></td>
+                                                <td class="num"><%= m.suggestions || 0 %></td>
+                                                <td class="num">
+                                                    <span class="pill pill-navy" style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:0.72rem;font-weight:700;line-height:1.3;background:#e8efff;color:var(--navy);"><%= t %></span>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="4" style="text-align:center;padding:30px;color:var(--gray-500);">No monthly data available yet.</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header"><h2>Priority Breakdown</h2></div>
+                        <div class="panel-body">
+                            <% if (priorityStats.length) { %>
+                                <% priorityStats.forEach(function(item) { %>
+                                    <div class="cat-row">
+                                        <div class="cat-row-label"><%= item.priority %></div>
+                                        <div class="cat-row-bar"><span style="width:<%= totalSubmissions ? Math.min(100, item.count / totalSubmissions * 100) : 0 %>%"></span></div>
+                                        <div class="cat-row-value"><%= item.count %></div>
+                                    </div>
+                                <% }) %>
+                            <% } else { %><p>No priority data available yet.</p><% } %>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header"><h2>Department Workload</h2></div>
+                        <div class="panel-body">
+                            <% departmentStats.forEach(function(item) { %>
+                                <div class="cat-row">
+                                    <div class="cat-row-label"><%= item.name %></div>
+                                    <div class="cat-row-bar"><span style="width:<%= totalSubmissions ? Math.min(100, item.count / totalSubmissions * 100) : 0 %>%"></span></div>
+                                    <div class="cat-row-value"><%= item.count %></div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; <%= new Date().getFullYear() %> EduVoice — Admin Portal</p>
+        </footer>
+    </div>
+</body>
+</html>

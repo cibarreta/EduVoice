@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../partials/head", { title: "Submissions" }) %>
+</head>
+<body class="app-shell">
+    <%- include("../partials/sidebar", { user: user, currentPath: "/staff/submissions", role: "staff" }) %>
+
+    <div class="app-main-wrap">
+        <header class="app-topbar">
+            <button class="topbar-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="app-sidebar" data-sidebar-open>
+                <span></span><span></span><span></span>
+            </button>
+            <div class="topbar-user">
+                <div class="topbar-user-avatar" aria-hidden="true">
+                    <%= (typeof user !== 'undefined' && user && user.name ? user.name.charAt(0).toUpperCase() : 'F') %>
+                </div>
+                <div class="topbar-user-meta">
+                    <strong><%= (typeof user !== 'undefined' && user ? user.name : 'Faculty') %></strong>
+                    <span>Faculty</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-header">
+            <h1>My Submissions</h1>
+            <p>Review and manage submissions assigned to you</p>
+        </div>
+
+        <div class="app-alerts">
+            <%- include("../partials/alerts") %>
+        </div>
+
+        <main class="app-content">
+            <form method="GET" action="/staff/submissions" class="filters-panel">
+                <div class="field">
+                    <label>Search</label>
+                    <input type="text" name="q" placeholder="Search by title, reference..." value="<%= query.q || '' %>">
+                </div>
+                <div class="field">
+                    <label>Category</label>
+                    <select name="category">
+                        <option value="">All Categories</option>
+                        <% if (categories && categories.length) { categories.forEach(function(c) { %>
+                            <option value="<%= c.id %>" <%= query.category == c.id ? 'selected' : '' %>><%= c.name %></option>
+                        <% }) } %>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="">All Status</option>
+                        <option value="Pending" <%= query.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                        <option value="Under Review" <%= query.status === 'Under Review' ? 'selected' : '' %>>Under Review</option>
+                        <option value="In Progress" <%= query.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+                        <option value="Resolved" <%= query.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+                        <option value="Rejected" <%= query.status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Priority</label>
+                    <select name="priority">
+                        <option value="">All Priorities</option>
+                        <% ['Low','Normal','High','Urgent'].forEach(function(value) { %>
+                            <option value="<%= value %>" <%= query.priority === value ? 'selected' : '' %>><%= value %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="dateFrom">From</label>
+                    <input id="dateFrom" type="date" name="dateFrom" value="<%= query.dateFrom || '' %>">
+                </div>
+                <div class="field">
+                    <label for="dateTo">To</label>
+                    <input id="dateTo" type="date" name="dateTo" value="<%= query.dateTo || '' %>">
+                </div>
+                <div class="field" style="display:flex;gap:8px;align-items:flex-end;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">
+                        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                            <path d="M21 21l-4.25-4.25M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Filter
+                    </button>
+                    <a href="/staff/submissions" class="btn btn-secondary" style="flex:1;">Reset</a>
+                </div>
+            </form>
+
+            <% if (submissions && submissions.length > 0) { %>
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% submissions.forEach(function(sub) { %>
+                                <tr>
+                                    <td style="font-weight:650;color:#12356a;"><%= sub.reference || '#' + sub.id %></td>
+                                    <td>
+                                        <% if (sub.type === 'feedback') { %>
+                                            <span class="badge badge-type-feedback">Feedback</span>
+                                        <% } else { %>
+                                            <span class="badge badge-type-suggestion"><%= sub.type.charAt(0).toUpperCase() + sub.type.slice(1) %></span>
+                                        <% } %>
+                                    </td>
+                                    <td style="font-weight:600;color:#172b4d;max-width:320px;">
+                                        <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= sub.title %></div>
+                                    </td>
+                                    <td><%= sub.category_name || 'General' %></td>
+                                    <td><%= sub.priority || 'Normal' %></td>
+                                    <td>
+                                        <% if (sub.status === 'Pending') { %>
+                                            <span class="badge badge-status-pending">Pending</span>
+                                        <% } else if (sub.status === 'Under Review') { %>
+                                            <span class="badge badge-status-review">Under Review</span>
+                                        <% } else if (sub.status === 'In Progress') { %>
+                                            <span class="badge badge-status-progress">In Progress</span>
+                                        <% } else if (sub.status === 'Resolved') { %>
+                                            <span class="badge badge-status-resolved">Resolved</span>
+                                        <% } else if (sub.status === 'Rejected') { %>
+                                            <span class="badge badge-status-rejected">Rejected</span>
+                                        <% } else { %>
+                                            <span class="badge badge-status-default"><%= sub.status || 'Pending' %></span>
+                                        <% } %>
+                                    </td>
+                                    <td style="color:#65758a;font-size:0.82rem;"><%= new Date(sub.created_at).toLocaleDateString() %></td>
+                                    <td>
+                                        <a href="/staff/submissions/<%= sub.id %>" class="btn btn-outline" style="min-height:36px;padding:6px 12px;font-size:0.8rem;">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <% if (pagination && pagination.totalPages > 1) { %>
+                    <div class="pagination">
+                        <p class="pagination-info">
+                            Showing <%= pagination.from %>-<%= pagination.to %> of <%= pagination.total %>
+                        </p>
+                        <div class="pagination-controls">
+                            <% if (pagination.hasPrev && pagination.page > 1) { %>
+                                <a class="page-btn" href="/staff/submissions?<%= new URLSearchParams({...query, page: pagination.page - 1}).toString() %>">
+                                    Previous
+                                </a>
+                            <% } %>
+                            <% for (var i = 1; i <= pagination.totalPages; i++) { %>
+                                <a class="page-btn <%= i === pagination.page ? 'is-active' : '' %>" href="/staff/submissions?<%= new URLSearchParams({...query, page: i}).toString() %>">
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                            <% if (pagination.hasNext && pagination.page < pagination.totalPages) { %>
+                                <a class="page-btn" href="/staff/submissions?<%= new URLSearchParams({...query, page: pagination.page + 1}).toString() %>">
+                                    Next
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div class="empty-state">
+                    <div style="width:56px;height:56px;margin:0 auto 16px;display:grid;place-items:center;border-radius:16px;background:#f3f6fa;color:#8090a4;">
+                        <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
+                            <path d="M5 5h14v15H5zM9 9h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>No submissions found</h3>
+                    <p>Try adjusting your search filters, or check back later.</p>
+                    <div style="margin-top:1.25rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                        <a href="/staff/submissions" class="btn btn-secondary">Reset Filters</a>
+                        <a href="/staff/dashboard" class="btn btn-primary">Back to Dashboard</a>
+                    </div>
+                </div>
+            <% } %>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 EduVoice. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

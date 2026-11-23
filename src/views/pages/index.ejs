@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EduVoice gives students a simple, organized way to share feedback and ideas that can help improve their school community.">
+    <meta name="theme-color" content="#12356a">
+    <title>EduVoice</title>
+    <link rel="icon" type="image/png" href="/images/eduvoice-mark.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/script.js" defer></script>
+</head>
+<body>
+    <div class="landing-page">
+        <header class="site-header">
+            <div class="header-inner">
+                <a class="brand" href="/" aria-label="EduVoice home">
+                    <span class="brand-icon" aria-hidden="true"><img src="/images/eduvoice-mark.png" alt=""></span>
+                    <span>EduVoice</span>
+                </a>
+                <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+                    <span></span><span></span><span></span>
+                </button>
+                <nav class="site-nav" id="primary-navigation" aria-label="Main navigation">
+                    <div class="nav-links">
+                        <a href="/about#about">About</a>
+                    </div>
+                    <div class="nav-actions">
+                        <% if (user && user.role === "student") { %>
+                            <a class="button button-primary nav-primary" href="/student/dashboard">Dashboard</a>
+                            <form action="/logout" method="POST"><input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"><button class="button button-outline" type="submit">Logout</button></form>
+                        <% } else if (user && user.role === "admin") { %>
+                            <a class="button button-outline" href="/admin/dashboard">Admin Dashboard</a>
+                            <a class="button button-primary nav-primary" href="/admin/feedback">Manage Feedback</a>
+                            <form action="/logout" method="POST"><input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"><button class="button button-outline" type="submit">Logout</button></form>
+                        <% } else { %>
+                            <a class="login-link" href="/login">Login</a>
+                            <a class="button button-primary nav-primary" href="/register">Register</a>
+                        <% } %>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero-section" id="home" aria-labelledby="hero-title">
+                <div class="content-width hero-grid">
+                    <div class="hero-copy">
+                        <p class="eyebrow"><span class="eyebrow-dot"></span> Student voice matters</p>
+                        <h1 id="hero-title">Your Voice.<br>Your School.<br><span>Your Impact.</span></h1>
+                        <p class="hero-description">EduVoice gives students a simple and organized way to share feedback, suggestions, concerns, and ideas that can help improve the school community.</p>
+                        <div class="hero-actions">
+                            <a class="button button-primary button-large" href="/login">Share Your Feedback <span aria-hidden="true">&rarr;</span></a>
+                            <a class="button button-text button-large" href="/about#how-it-works">Learn How It Works <span class="play-icon" aria-hidden="true">&#9654;</span></a>
+                        </div>
+                        <p class="hero-note"><span class="note-check" aria-hidden="true">&#10003;</span>A welcoming space for every student voice</p>
+                    </div>
+
+                    <div class="hero-visual" role="img" aria-label="Illustration of an organized student feedback dashboard">
+                        <div class="visual-orbit orbit-one"></div>
+                        <div class="visual-orbit orbit-two"></div>
+                        <div class="dashboard-card">
+                            <div class="dashboard-top">
+                                <div class="dashboard-brand">
+                                    <span class="mini-brand-icon" aria-hidden="true"><img src="/images/eduvoice-mark.png" alt=""></span>
+                                    <span>EduVoice</span>
+                                </div>
+                                <span class="dashboard-status"><span></span> Your space</span>
+                            </div>
+                            <div class="dashboard-heading">
+                                <p>Student feedback</p>
+                                <h2>Every idea can make a difference.</h2>
+                            </div>
+                            <div class="feedback-preview">
+                                <span class="preview-icon preview-blue" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 3.75 21l4.4-1.35c1.15.55 2.45.85 3.85.85 5.25 0 9.5-3.72 9.5-8.3S17.25 4 12 4 2.5 7.72 2.5 12.2c0 2.5 1.25 4.75 3.25 6.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+                                <span><strong>Suggestion submitted</strong><small>Your ideas have a place here</small></span>
+                                <span class="preview-check" aria-hidden="true">&#10003;</span>
+                            </div>
+                            <div class="feedback-preview">
+                                <span class="preview-icon preview-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 6v5.5c0 5.1-3.45 8.6-8 10.5-4.55-1.9-8-5.4-8-10.5V6l8-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m8.5 12 2.2 2.2 4.8-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span><strong>Concern received</strong><small>Shared securely with the school</small></span>
+                                <span class="preview-check" aria-hidden="true">&#10003;</span>
+                            </div>
+                            <div class="feedback-preview">
+                                <span class="preview-icon preview-purple" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5h14v15H5zM8 9h8M8 12.5h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 5V3h8v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                <span><strong>Feedback organized</strong><small>Ready to be reviewed</small></span>
+                                <span class="preview-check" aria-hidden="true">&#10003;</span>
+                            </div>
+                            <div class="dashboard-footer"><span class="avatar-stack" aria-hidden="true"><i></i><i></i><i></i></span><span>Making room for student voices</span></div>
+                        </div>
+                        <div class="floating-card voice-card">
+                            <span class="floating-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 7v10M17 7v10M3 10v4M21 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                            <span><strong>Your voice matters</strong><small>Share what is on your mind</small></span>
+                        </div>
+                        <div class="floating-card submitted-card">
+                            <span class="submitted-check" aria-hidden="true">&#10003;</span>
+                            <span><strong>Feedback submitted</strong><small>Thanks for speaking up!</small></span>
+                        </div>
+                    </div>
+                </div>
+                <a class="scroll-cue" href="/about#about" aria-label="Learn more about EduVoice"><span></span></a>
+            </section>
+
+        </main>
+
+        <footer class="site-footer">
+            <div class="content-width footer-main">
+                <div class="footer-brand-block">
+                    <a class="brand footer-brand" href="/" aria-label="EduVoice home"><span class="brand-icon" aria-hidden="true"><img src="/images/eduvoice-mark.png" alt=""></span><span>EduVoice</span></a>
+                    <p>Student Feedback and<br>Suggestion System</p>
+                </div>
+                <nav class="footer-nav" aria-label="Footer navigation">
+                    <a href="/#home">Home</a><a href="/about#about">About</a><a href="/about#features">Features</a><a href="/about#how-it-works">How It Works</a>
+                </nav>
+                <div class="footer-account">
+                    <% if (user) { %>
+                        <% if (user.role === "admin") { %><a href="/admin/dashboard">Dashboard</a><% } else { %><a href="/student/dashboard">Dashboard</a><% } %>
+                        <form action="/logout" method="POST"><input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"><button type="submit">Logout</button></form>
+                    <% } else { %>
+                        <a href="/login">Login</a><a href="/register">Register</a>
+                    <% } %>
+                </div>
+            </div>
+            <div class="content-width footer-bottom">
+                <p>&copy; 2026 EduVoice. All rights reserved.</p>
+                <a href="/#home">Back to top <span aria-hidden="true">&uarr;</span></a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
