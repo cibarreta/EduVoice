@@ -105,6 +105,13 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
+    if (!req.session.csrfToken) {
+    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
+    }
+
+    res.locals.csrfToken = req.session.csrfToken;
+    next();
+    
     const safeMethods = ["GET", "HEAD", "OPTIONS"];
     if (!safeMethods.includes(req.method)) {
         const isMultipartSubmission = req.method === "POST" &&
@@ -119,12 +126,6 @@ app.use((req, res, next) => {
             });
         }
     }
-
-    if (!req.session.csrfToken) {
-        req.session.csrfToken = crypto.randomBytes(32).toString("hex");
-    }
-    res.locals.csrfToken = req.session.csrfToken;
-    next();
 });
 
 app.get("/", (req, res) => {

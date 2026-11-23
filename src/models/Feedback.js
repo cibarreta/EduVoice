@@ -128,7 +128,14 @@ async function getFeedbackStatsByUser(user_id) {
     return stats;
 }
 
+
 async function getRecentByUser(user_id, limit = 5) {
+    const parsedLimit = Number(limit);
+    const safeLimit =
+        Number.isSafeInteger(parsedLimit) && parsedLimit > 0
+            ? Math.min(parsedLimit, 100)
+            : 5;
+
     const [rows] = await db.execute(
         `SELECT f.*, CONCAT('EV-', LPAD(f.id, 6, '0')) AS ticket_number,
                 c.name AS category_name, sd.name AS student_department_name
@@ -137,8 +144,8 @@ async function getRecentByUser(user_id, limit = 5) {
          LEFT JOIN departments sd ON f.student_department_id = sd.id
          WHERE f.user_id = ?
          ORDER BY f.created_at DESC
-         LIMIT ?`,
-        [user_id, limit]
+         LIMIT ${safeLimit}`,
+        [user_id]
     );
 
     return rows;

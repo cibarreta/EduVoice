@@ -29,6 +29,12 @@ function authorizeRoles(...allowedRoles) {
             }
 
             req.session.user.role = rows[0].role;
+            console.log("AUTH CHECK:", {
+            sessionUserId: req.session.user.id,
+            databaseUserId: rows[0].id,
+            databaseRole: rows[0].role,
+            isActive: rows[0].is_active
+                });
             if (!allowedRoles.includes(rows[0].role)) {
                 return res.status(403).render("errors/403", {
                     user: req.session.user,
