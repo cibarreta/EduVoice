@@ -1,5 +1,6 @@
 const db = require("../config/database");
 
+
 async function createFeedback({
     user_id,
     category_id,
@@ -12,11 +13,27 @@ async function createFeedback({
     department_id = null,
     assigned_to = null
 }, executor = db) {
-    const [result] = await executor.execute(
+
+    // Generate a unique feedback ID.
+    const [sequenceResult] = await executor.execute(
+        "INSERT INTO feedback_id_sequence () VALUES ()"
+    );
+
+    const feedbackId = sequenceResult.insertId;
+
+    if (!feedbackId) {
+        throw new Error("Failed to generate feedback ID.");
+    }
+
+    // Insert the feedback using the generated ID.
+    await executor.execute(
         `INSERT INTO feedback
-        (user_id, category_id, title, description, type, is_anonymous, priority, student_department_id, department_id, assigned_to)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (id, user_id, category_id, title, description, type,
+         is_anonymous, priority, student_department_id,
+         department_id, assigned_to)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
+            feedbackId,
             user_id,
             category_id,
             title,
@@ -30,7 +47,7 @@ async function createFeedback({
         ]
     );
 
-    return result.insertId;
+    return feedbackId;
 }
 
 async function getFeedbackByUser(user_id, type) {

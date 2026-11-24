@@ -1,3 +1,4 @@
+
 async function createNotification(executor, {
     userId,
     feedbackId = null,
@@ -5,12 +6,26 @@ async function createNotification(executor, {
     title,
     message
 }) {
+    // Generate a notification ID using the sequence table
+    const [sequenceResult] = await executor.execute(
+        "INSERT INTO notification_id_sequence () VALUES ()"
+    );
+
+    const notificationId = sequenceResult.insertId;
+
+    if (!notificationId) {
+        throw new Error("Failed to generate notification ID.");
+    }
+
+    // Insert the notification using the generated ID
     await executor.execute(
         `INSERT INTO notifications
-            (user_id, feedback_id, event_type, title, message)
-         VALUES (?, ?, ?, ?, ?)`,
-        [userId, feedbackId, eventType, title, message]
+            (id, user_id, feedback_id, event_type, title, message)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [notificationId, userId, feedbackId, eventType, title, message]
     );
+
+    return notificationId;
 }
 
 async function notifyActiveAdmins(executor, notification) {

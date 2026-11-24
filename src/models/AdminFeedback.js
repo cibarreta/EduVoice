@@ -101,16 +101,28 @@ async function getAllFeedback({
     const [countRows] = await db.execute(countSql, params);
     const total = countRows[0].total;
 
-    let limitClause = "";
-    const limitParams = [];
 
-    if (page && perPage) {
-        const pageNum = Number(page) || 1;
-        const perPageNum = Number(perPage) || 10;
-        const offset = (pageNum - 1) * perPageNum;
-        limitClause = "LIMIT ? OFFSET ?";
-        limitParams.push(perPageNum, offset);
+    let limitClause = "";
+
+    if (page !== undefined && perPage !== undefined) {
+    const parsedPage = Number(page);
+    const parsedPerPage = Number(perPage);
+
+    const pageNum =
+        Number.isSafeInteger(parsedPage) && parsedPage > 0
+            ? parsedPage
+            : 1;
+
+    const perPageNum =
+        Number.isSafeInteger(parsedPerPage) && parsedPerPage > 0
+            ? Math.min(parsedPerPage, 100)
+            : 10;
+
+    const offset = (pageNum - 1) * perPageNum;
+
+    limitClause = `LIMIT ${perPageNum} OFFSET ${offset}`;
     }
+
 
     const dataSql = `
         SELECT
@@ -140,7 +152,7 @@ async function getAllFeedback({
         ${limitClause}
     `;
 
-    const [rows] = await db.execute(dataSql, [...params, ...limitParams]);
+    const [rows] = await db.execute(dataSql, params);
 
     return { rows, total };
 }

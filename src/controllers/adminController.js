@@ -93,18 +93,31 @@ async function getAllUsers({ role, search, page, perPage }) {
     );
     const total = countRows[0].total;
 
-    const pageNum = Number(page) || 1;
-    const perPageNum = Number(perPage) || 10;
+    
+    const parsedPage = Number(page);
+    const parsedPerPage = Number(perPage);
+
+    const pageNum =
+    Number.isSafeInteger(parsedPage) && parsedPage > 0
+        ? parsedPage
+        : 1;
+
+    const perPageNum =
+    Number.isSafeInteger(parsedPerPage) && parsedPerPage > 0
+        ? Math.min(parsedPerPage, 100)
+        : 10;
+
     const offset = (pageNum - 1) * perPageNum;
 
     const [rows] = await db.execute(
-        `SELECT u.id, u.student_id, u.name, u.email, u.role, u.is_active,
-                u.department_id, d.name AS department_name, u.created_at, u.updated_at
-         FROM users u
-         LEFT JOIN departments d ON d.id = u.department_id
-         ${whereClause}
-         ORDER BY u.created_at DESC LIMIT ? OFFSET ?`,
-        [...params, perPageNum, offset]
+    `SELECT u.id, u.student_id, u.name, u.email, u.role, u.is_active,
+            u.department_id, d.name AS department_name, u.created_at, u.updated_at
+     FROM users u
+     LEFT JOIN departments d ON d.id = u.department_id
+     ${whereClause}
+     ORDER BY u.created_at DESC
+     LIMIT ${perPageNum} OFFSET ${offset}`,
+    params
     );
 
     return { rows, total };
@@ -142,7 +155,15 @@ async function getUserSubmissionStats(userId) {
     };
 }
 
+
 async function getUserRecentSubmissions(userId, limit) {
+    const parsedLimit = Number(limit);
+
+    const safeLimit =
+        Number.isSafeInteger(parsedLimit) && parsedLimit > 0
+            ? Math.min(parsedLimit, 100)
+            : 10;
+
     const [rows] = await db.execute(`
         SELECT
             f.*,
@@ -151,8 +172,9 @@ async function getUserRecentSubmissions(userId, limit) {
         LEFT JOIN categories c ON f.category_id = c.id
         WHERE f.user_id = ?
         ORDER BY f.created_at DESC
-        LIMIT ?
-    `, [userId, Number(limit)]);
+        LIMIT ${safeLimit}
+    `, [userId]);
+
     return rows;
 }
 
