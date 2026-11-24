@@ -104,28 +104,50 @@ app.use((req, res, next) => {
     next();
 });
 
+
 app.use((req, res, next) => {
     if (!req.session.csrfToken) {
-    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
+        req.session.csrfToken = crypto.randomBytes(32).toString("hex");
     }
 
     res.locals.csrfToken = req.session.csrfToken;
-    next();
-    
+
     const safeMethods = ["GET", "HEAD", "OPTIONS"];
+
     if (!safeMethods.includes(req.method)) {
-        const isMultipartSubmission = req.method === "POST" &&
+        const isMultipartSubmission =
+            req.method === "POST" &&
             req.is("multipart/form-data") &&
-            ["/student/submit-feedback", "/student/submit-suggestion", "/student/submit", "/feedback/submit"].includes(req.path);
-        if (!isMultipartSubmission &&
-            !isValidCsrfToken(submittedCsrfToken(req), req.session.csrfToken)) {
-            console.warn("[CSRF] Invalid or missing token:", req.method, req.originalUrl, "from", req.ip);
+            [
+                "/student/submit-feedback",
+                "/student/submit-suggestion",
+                "/student/submit",
+                "/feedback/submit"
+            ].includes(req.path);
+
+        if (
+            !isMultipartSubmission &&
+            !isValidCsrfToken(
+                submittedCsrfToken(req),
+                req.session.csrfToken
+            )
+        ) {
+            console.warn(
+                "[CSRF] Invalid or missing token:",
+                req.method,
+                req.originalUrl,
+                "from",
+                req.ip
+            );
+
             return res.status(403).render("errors/403", {
                 user: req.session.user || null,
                 message: "This request could not be verified. Reload the page and try again."
             });
         }
     }
+
+    next();
 });
 
 app.get("/", (req, res) => {

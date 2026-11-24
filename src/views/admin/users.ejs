@@ -77,12 +77,16 @@
                             </thead>
                             <tbody>
                                 <% users.forEach(function(u) {
-                                    var bgColors = { admin: 'var(--violet)', staff: 'var(--blue)', student: 'var(--navy)' };
+                                    var avatarClass = {
+                                        admin: 'user-avatar-sm-admin',
+                                        staff: 'user-avatar-sm-staff',
+                                        student: 'user-avatar-sm-student'
+                                    }[u.role] || 'user-avatar-sm-student';
                                 %>
                                     <tr>
                                         <td>
                                             <div class="user-cell">
-                                                <div class="user-avatar-sm" style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:0.85rem;flex-shrink:0;background:<%= bgColors[u.role] || 'var(--navy)' %>;"><%= u.name ? u.name.charAt(0).toUpperCase() : '?' %></div>
+                                                <div class="user-avatar-sm <%= avatarClass %>"><%= u.name ? u.name.charAt(0).toUpperCase() : '?' %></div>
                                                 <div class="user-meta" style="margin-left:12px;">
                                                     <strong style="display:block;color:var(--gray-900);font-size:0.9rem;"><%= u.name || 'Unnamed User' %></strong>
                                                 </div>

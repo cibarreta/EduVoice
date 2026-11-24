@@ -5449,6 +5449,21 @@ textarea[aria-invalid="true"] {
 .user-avatar.c-amber { background: linear-gradient(135deg, #b45309, #f59e0b); }
 .user-avatar.c-rose { background: linear-gradient(135deg, #be123c, #f43f5e); }
 
+.user-avatar-sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+.user-avatar-sm-admin { background: var(--violet); }
+.user-avatar-sm-staff { background: var(--blue); }
+.user-avatar-sm-student { background: var(--navy); }
+
 .role-badge {
     display: inline-flex;
     align-items: center;
